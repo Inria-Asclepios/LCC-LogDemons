@@ -1,0 +1,14 @@
+# Source for the package use configuration file
+# variables enclosed by @ signs will be inserted automatically.
+
+# defines the include directories
+SET (@PACKAGENAME@_INCLUDE_DIR @PACKAGE_INCLUDE_DIR@)
+# defines the link directories
+SET (@PACKAGENAME@_LINK_DIR @PACKAGE_LINK_DIR@)
+
+# defines a list of all libraries exported
+# (optional)
+# SET (@PACKAGENAME@_LIBRARIES 
+#     lib1 
+#     lib2
+# )
