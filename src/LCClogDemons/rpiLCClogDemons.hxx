@@ -4,7 +4,7 @@
 
 
 #include <itkStationaryVelocityFieldTransform.h>
-#include <itkDisplacementFieldTransform.h>
+#include <rpiDisplacementFieldTransform.h>
 #include "rpiRegistrationMethod.hxx"
 
 
@@ -68,7 +68,7 @@ public:
     typedef typename TransformType::Pointer
             TransformPointerType;
 
-    typedef itk::DisplacementFieldTransform< TTransformScalarType, TFixedImage::ImageDimension >
+    typedef rpi::DisplacementFieldTransform< TTransformScalarType, TFixedImage::ImageDimension >
             DisplacementFieldTransformType;
 
     typedef typename DisplacementFieldTransformType::Pointer

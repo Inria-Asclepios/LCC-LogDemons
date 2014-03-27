@@ -63,7 +63,7 @@ public:
   itkNewMacro( Self );
 
 
-  void SetTrueField( DeformationFieldType * truefield)
+  void SetTrueField( const DeformationFieldType * truefield)
     {
     m_TrueField = truefield;
 

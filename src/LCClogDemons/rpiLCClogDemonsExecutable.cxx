@@ -318,7 +318,7 @@ int StartMainProgram(struct Param param)
     typedef itk::Transform<double, 3, 3>
             LinearTransformType;
 
-    typedef itk::DisplacementFieldTransform< TransformScalarType, 3 >
+    typedef rpi::DisplacementFieldTransform< TransformScalarType, 3 >
             FieldTransformType;
 
 
@@ -370,8 +370,8 @@ int StartMainProgram(struct Param param)
 
 	 if ( param.trueField.compare("")!=0)
 	 	{
-		  typename itk::DisplacementFieldTransform<TransformScalarType,3>::Pointer TrueFieldImage = rpi::readDisplacementField<TransformScalarType>( param.trueField );
-	          registration->SetTrueField( TrueFieldImage);
+         typename rpi::DisplacementFieldTransform<TransformScalarType,3>::Pointer TrueFieldImage = rpi::readDisplacementField<TransformScalarType>( param.trueField );
+         registration->SetTrueField( TrueFieldImage);
 		}
 
         // Set update rule
@@ -483,9 +483,9 @@ int StartMainProgram(struct Param param)
         // Write the output image
         std::cout << "  Writing image                        : " << std::flush;
         rpi::resampleAndWriteImage<TFixedImage, TMovingImage, TransformScalarType>(
-                    registration->GetDisplacementFieldTransformation(),
 		    fixedImage,
                     movingImage,
+                    registration->GetDisplacementFieldTransformation(),
                     param.outputImagePath,
                     param.interpolatorType	);
         std::cout << "OK" << std::endl << std::endl;

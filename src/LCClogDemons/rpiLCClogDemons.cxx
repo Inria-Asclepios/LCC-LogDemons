@@ -36,7 +36,7 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::LCClogDemons(vo
     this->m_SigmaI 				                =0.2;
     this->m_BCHExpansion                        = 2;
 
-    this->m_RegularizationType                  =1;
+    this->m_RegularizationType                  =0;
     this->m_HarmonicWeight                      =1e-3;
     this->m_BendingWeight                       =1e-6;
 
@@ -467,7 +467,7 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
 				        exit( EXIT_FAILURE );
         				}
 
-                       observer->SetTrueField((m_TrueField->GetDisplacementField()));
+                       observer->SetTrueField((m_TrueField->GetParametersAsVectorField()));
       
                               }
 
@@ -495,7 +495,7 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
 
 
 		// Set the field interpolator
-		typedef  itk::VectorLinearInterpolateNearestNeighborExtrapolateImageFunction< FieldContainerType, double >  FieldInterpolatorType;
+        typedef  itk::VectorLinearInterpolateNearestNeighborExtrapolateImageFunction< FieldContainerType, double >  FieldInterpolatorType;
 		typename FieldInterpolatorType::Pointer interpolator = FieldInterpolatorType::New();
 		multires->GetFieldExpander()->SetInterpolator( interpolator );
 
@@ -532,7 +532,7 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
  		 if (this->m_initialTransform.IsNotNull())
     			{
                     typename DisplacementFieldTransformType::Pointer transform = this->m_initialTransform;
-                    typename FieldContainerType::ConstPointer field            = transform->GetDisplacementField();
+                    typename FieldContainerType::ConstPointer field            = transform->GetParametersAsVectorField();
 			        multires->SetArbitraryInitialVelocityField( const_cast<FieldContainerType *>(field.GetPointer()) );
     			}	
 
@@ -558,7 +558,7 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
 
 		// Create the velocity field transform object
 		typename DisplacementFieldTransformType::Pointer displacementFieldTransform = DisplacementFieldTransformType::New();
-        displacementFieldTransform->SetDisplacementField( static_cast<typename FieldContainerType::Pointer>( multires->GetDeformationField() ) );
+        displacementFieldTransform->SetParametersAsVectorField( static_cast<typename FieldContainerType::Pointer>( multires->GetDeformationField() ) );
 		this->m_displacementFieldTransform = displacementFieldTransform;
 
 		}
@@ -683,7 +683,7 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
     if (this->m_initialTransform.IsNotNull())
     {
         typename DisplacementFieldTransformType::Pointer           transform = this->m_initialTransform;
-        typename FieldContainerType::ConstPointer field     = transform->GetDisplacementField();
+        typename FieldContainerType::ConstPointer field     = transform->GetParametersAsVectorField();
         multires->SetArbitraryInitialVelocityField( const_cast<FieldContainerType *>(field.GetPointer()) );
     }
 
@@ -709,7 +709,7 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
 
     // Create the velocity field transform object
     typename DisplacementFieldTransformType::Pointer displacementFieldTransform = DisplacementFieldTransformType::New();
-    displacementFieldTransform->SetDisplacementField( static_cast<typename FieldContainerType::Pointer>( multires->GetDeformationField() ) );
+    displacementFieldTransform->SetParametersAsVectorField( static_cast<typename FieldContainerType::Pointer>( multires->GetDeformationField() ) );
     this->m_displacementFieldTransform = displacementFieldTransform;
   }
 }
