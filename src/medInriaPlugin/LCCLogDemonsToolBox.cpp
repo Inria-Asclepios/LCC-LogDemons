@@ -299,6 +299,7 @@ void LCCLogDemonsToolBox::run()
     process_Registration->setUpdateFieldSigma(d->updateFieldSigmaSpinBox->value());
     process_Registration->setVelocityFieldSigma(d->velocityFieldSigmaSpinBox->value());
     process_Registration->setNumberOfTermsBCHExpansion((unsigned int)d->bchExpansionSpinBox->value());
+    process_Registration->useMask(false); //Should we allow the use of mask ?
 
     try {
         process_Registration->setNumberOfIterations(

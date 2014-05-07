@@ -50,6 +50,7 @@ public:
     virtual void setUpdateFieldSigma(double sigma);
     virtual void setVelocityFieldSigma(double sigma);
     virtual void setNumberOfTermsBCHExpansion(unsigned int number);
+    virtual void useMask(bool flag);
 
 public:
     /**

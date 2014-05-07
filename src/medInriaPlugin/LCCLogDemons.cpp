@@ -54,7 +54,7 @@ public:
     std::vector<unsigned int> iterations;
     double maxStepLength, similarityCriteriaSigma, sigmaI, updateFieldSigma, velocityFieldSigma;
     unsigned int BCHExpansion;
-    bool verbose, boundaryCheck, useHistogramMatching;
+    bool verbose, boundaryCheck, useHistogramMatching, useMask;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -147,6 +147,11 @@ void LCCLogDemons::setNumberOfTermsBCHExpansion(unsigned int number)
     d->BCHExpansion = number;
 }
 
+void LCCLogDemons::useMask (bool flag)
+{
+    d->useMask = flag;
+}
+
 QString LCCLogDemons::description() const
 {
     return "LCCLogDemons";
@@ -164,20 +169,9 @@ int LCCLogDemonsPrivate::update()
 {
     registrationMethod = new rpi::LCClogDemons<RegImageType,RegImageType,float> ();
     proc->fixedImage().GetPointer()->SetSpacing(proc->movingImages()[0].GetPointer()->GetSpacing());
-    typedef itk::Image<unsigned short, 3> OldImageType;
-    typename OldImageType::Pointer bloup = (OldImageType*)proc->fixedImage().GetPointer();
-    typename OldImageType::Pointer bloup2 = (OldImageType*)proc->movingImages()[0].GetPointer();
-    typedef itk::CastImageFilter <OldImageType, RegImageType> CastFilter;
-    typename CastFilter::Pointer castFilter1 = CastFilter::New();
-    typename CastFilter::Pointer castFilter2 = CastFilter::New();
 
-    castFilter1->SetInput(bloup);
-    castFilter2->SetInput(bloup2);
-    typename RegImageType::Pointer input1 = castFilter1->GetOutput();
-    typename RegImageType::Pointer input2 = castFilter2->GetOutput();
-
-    registrationMethod->SetFixedImage((const RegImageType*) input1);
-    registrationMethod->SetMovingImage((const RegImageType*) input2);
+    registrationMethod->SetFixedImage((const RegImageType*) proc->fixedImage().GetPointer());
+    registrationMethod->SetMovingImage((const RegImageType*) proc->movingImages()[0].GetPointer());
     
     registrationMethod->SetUpdateRule(updateRule);
     registrationMethod->SetVerbosity(verbose);
@@ -194,6 +188,7 @@ int LCCLogDemonsPrivate::update()
     registrationMethod->SetUpdateFieldStandardDeviation(updateFieldSigma);
     registrationMethod->SetStationaryVelocityFieldStandardDeviation(velocityFieldSigma);
     registrationMethod->SetNumberOfTermsBCHExpansion(BCHExpansion);
+    registrationMethod->UseMask(useMask);
     
     // Run the registration
     time_t t1 = clock();
