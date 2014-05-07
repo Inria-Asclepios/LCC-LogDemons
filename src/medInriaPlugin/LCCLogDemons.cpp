@@ -50,9 +50,11 @@ public:
     
     rpi::LCClogDemons< RegImageType, RegImageType, float > * registrationMethod;
     rpi::LCClogDemons< RegImageType, RegImageType, float >::UpdateRule updateRule;
+    rpi::LCClogDemons< RegImageType, RegImageType, float >::GradientType gradientType;
     std::vector<unsigned int> iterations;
-
-    bool verbose;
+    double maxStepLength, similarityCriteriaSigma, sigmaI, updateFieldSigma, velocityFieldSigma;
+    unsigned int BCHExpansion;
+    bool verbose, boundaryCheck, useHistogramMatching;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -95,9 +97,54 @@ void LCCLogDemons::setVerbosity(bool verbose)
     d->verbose = verbose;
 }
 
-void LCCLogDemons::setIterations(std::vector<unsigned int> iterations)
+void LCCLogDemons::setNumberOfIterations(std::vector<unsigned int> iterations)
 {
     d->iterations = iterations;
+}
+
+void LCCLogDemons::setMaximumUpdateStepLength(double value)
+{
+    d->maxStepLength = value;
+}
+
+void LCCLogDemons::setGradientType(int value)
+{
+    d->gradientType = (rpi::LCClogDemons< RegImageType, RegImageType, float >::GradientType)value;;
+}
+
+void LCCLogDemons::setUseHistogramMatching(bool flag)
+{
+    d->useHistogramMatching = flag;
+}
+
+void LCCLogDemons::setBoundaryCheck(bool flag)
+{
+    d->boundaryCheck = flag;
+}
+
+void LCCLogDemons::setSigmaI(double sigmaI)
+{
+    d->sigmaI = sigmaI;
+}
+
+void LCCLogDemons::setSimilarityCriteriaSigma(double std)
+{
+    d->similarityCriteriaSigma = std;
+}
+
+void LCCLogDemons::setUpdateFieldSigma(double sigma)
+{
+    d->updateFieldSigma = sigma;
+}
+
+void LCCLogDemons::setVelocityFieldSigma(double sigma)
+{
+    d->velocityFieldSigma = sigma;
+}
+
+void LCCLogDemons::setNumberOfTermsBCHExpansion(unsigned int number)
+{
+    d->BCHExpansion = number;
 }
 
 QString LCCLogDemons::description() const
@@ -116,13 +163,37 @@ template <typename PixelType>
 int LCCLogDemonsPrivate::update()
 {
     registrationMethod = new rpi::LCClogDemons<RegImageType,RegImageType,float> ();
-    
-    registrationMethod->SetFixedImage((const RegImageType*) proc->fixedImage().GetPointer());
-    registrationMethod->SetMovingImage((const RegImageType*) proc->movingImages()[0].GetPointer());
+    proc->fixedImage().GetPointer()->SetSpacing(proc->movingImages()[0].GetPointer()->GetSpacing());
+    typedef itk::Image<unsigned short, 3> OldImageType;
+    typename OldImageType::Pointer bloup = (OldImageType*)proc->fixedImage().GetPointer();
+    typename OldImageType::Pointer bloup2 = (OldImageType*)proc->movingImages()[0].GetPointer();
+    typedef itk::CastImageFilter <OldImageType, RegImageType> CastFilter;
+    typename CastFilter::Pointer castFilter1 = CastFilter::New();
+    typename CastFilter::Pointer castFilter2 = CastFilter::New();
+
+    castFilter1->SetInput(bloup);
+    castFilter2->SetInput(bloup2);
+    typename RegImageType::Pointer input1 = castFilter1->GetOutput();
+    typename RegImageType::Pointer input2 = castFilter2->GetOutput();
+
+    registrationMethod->SetFixedImage((const RegImageType*) input1);
+    registrationMethod->SetMovingImage((const RegImageType*) input2);
     
     registrationMethod->SetUpdateRule(updateRule);
     registrationMethod->SetVerbosity(verbose);
+
+    //Log
+    registrationMethod->SetMaximumUpdateStepLength(maxStepLength);
+    registrationMethod->SetGradientType(gradientType);
+    registrationMethod->SetUseHistogramMatching(useHistogramMatching);
+
     registrationMethod->SetNumberOfIterations(iterations);
+    registrationMethod->SetBoundaryCheck(boundaryCheck);
+    registrationMethod->SetSimilarityCriteriaStandardDeviation(similarityCriteriaSigma);
+    registrationMethod->SetSigmaI(sigmaI);
+    registrationMethod->SetUpdateFieldStandardDeviation(updateFieldSigma);
+    registrationMethod->SetStationaryVelocityFieldStandardDeviation(velocityFieldSigma);
+    registrationMethod->SetNumberOfTermsBCHExpansion(BCHExpansion);
     
     // Run the registration
     time_t t1 = clock();

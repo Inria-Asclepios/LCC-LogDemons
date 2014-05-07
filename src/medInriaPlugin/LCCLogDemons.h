@@ -40,7 +40,16 @@ public:
     virtual void setUpdateRule(int rule);
 
     virtual void setVerbosity(bool verbose);
-    virtual void setIterations(std::vector<unsigned int> iterations);
+    virtual void setMaximumUpdateStepLength(double value);
+    virtual void setGradientType(int value);
+    virtual void setUseHistogramMatching(bool flag);
+    virtual void setNumberOfIterations(std::vector<unsigned int> iterations);
+    virtual void setSimilarityCriteriaSigma(double std);
+    virtual void setSigmaI(double sigmaI);
+    virtual void setBoundaryCheck(bool flag);
+    virtual void setUpdateFieldSigma(double sigma);
+    virtual void setVelocityFieldSigma(double sigma);
+    virtual void setNumberOfTermsBCHExpansion(unsigned int number);
 
 public:
     /**

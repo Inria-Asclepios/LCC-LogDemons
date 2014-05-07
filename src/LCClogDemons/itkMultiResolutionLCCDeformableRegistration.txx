@@ -704,7 +704,7 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
     if (m_UseMask)
       {
        m_ImageExpander->SetInput( m_MaskImage );
-       m_ImageExpander->SetShrinkFactors(pow(2,m_MovingImagePyramid->GetNumberOfLevels()-movingLevel-1));
+       m_ImageExpander->SetShrinkFactors(pow(2.0,(int)(m_MovingImagePyramid->GetNumberOfLevels()-movingLevel-1)));
        m_ImageExpander->Update();
        m_RegistrationFilter->UseMask(m_UseMask);
        m_RegistrationFilter->SetMaskImage(m_ImageExpander->GetOutput() );
@@ -793,7 +793,7 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
               m_ImageExpander->SetOutputSpacing(    fi->GetSpacing());
               m_ImageExpander->SetOutputDirection(  fi->GetDirection());
 */
-              m_ImageExpander->SetShrinkFactors(pow(2,m_MovingImagePyramid->GetNumberOfLevels()-movingLevel-1));
+              m_ImageExpander->SetShrinkFactors(pow(2.0,(int)(m_MovingImagePyramid->GetNumberOfLevels()-movingLevel-1)));
               m_ImageExpander->UpdateLargestPossibleRegion();
            
               m_RegistrationFilter->UseMask( m_UseMask );

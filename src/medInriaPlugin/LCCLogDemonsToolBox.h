@@ -30,6 +30,7 @@ public:
     static bool registered();
     
 public slots:
+    void chooseUpdateRule(int);
     void run();
     
 private:

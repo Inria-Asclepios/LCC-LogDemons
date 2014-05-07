@@ -28,7 +28,7 @@ SET_TARGET_PROPERTIES ( libLCClogDemons PROPERTIES OUTPUT_NAME "RPILCClogDemons"
 
 ADD_EXECUTABLE        ( exeLCClogDemons rpiLCClogDemonsExecutable.cxx )
 TARGET_LINK_LIBRARIES ( exeLCClogDemons libLCClogDemons )
-SET_TARGET_PROPERTIES ( exeLCClogDemons PROPERTIES OUTPUT_NAME "rpiLCClogDemons" )
+SET_TARGET_PROPERTIES ( exeLCClogDemons PROPERTIES OUTPUT_NAME "rpiLCClogDemonsExe" )
 
 
 # Install rules
