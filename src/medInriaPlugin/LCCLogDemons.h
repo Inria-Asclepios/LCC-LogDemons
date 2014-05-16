@@ -51,6 +51,7 @@ public:
     virtual void setVelocityFieldSigma(double sigma);
     virtual void setNumberOfTermsBCHExpansion(unsigned int number);
     virtual void useMask(bool flag);
+    virtual void setInterpolatorType(int value);
 
 public:
     /**

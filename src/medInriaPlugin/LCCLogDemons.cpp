@@ -55,6 +55,7 @@ public:
     double maxStepLength, similarityCriteriaSigma, sigmaI, updateFieldSigma, velocityFieldSigma;
     unsigned int BCHExpansion;
     bool verbose, boundaryCheck, useHistogramMatching, useMask;
+    int interpolatorType;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -152,6 +153,11 @@ void LCCLogDemons::useMask (bool flag)
     d->useMask = flag;
 }
 
+void LCCLogDemons::setInterpolatorType(int value)
+{
+    d->interpolatorType = value;;
+}
+
 QString LCCLogDemons::description() const
 {
     return "LCCLogDemons";
@@ -180,7 +186,7 @@ int LCCLogDemonsPrivate::update()
     registrationMethod->SetMaximumUpdateStepLength(maxStepLength);
     registrationMethod->SetGradientType(gradientType);
     registrationMethod->SetUseHistogramMatching(useHistogramMatching);
-
+    
     registrationMethod->SetNumberOfIterations(iterations);
     registrationMethod->SetBoundaryCheck(boundaryCheck);
     registrationMethod->SetSimilarityCriteriaStandardDeviation(similarityCriteriaSigma);
@@ -214,7 +220,32 @@ int LCCLogDemonsPrivate::update()
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
+    
+    // Set the image interpolator
+    switch(interpolatorType) {
 
+    case rpi::INTERPOLATOR_NEAREST_NEIGHBOR:
+        resampler->SetInterpolator(itk::NearestNeighborInterpolateImageFunction<RegImageType, float>::New());
+        break;
+
+    case rpi::INTERPOLATOR_LINEAR:
+        // Nothing to do ; linear interpolator by default
+        break;
+
+    case rpi::INTERPOLATOR_BSLPINE:
+        resampler->SetInterpolator(itk::BSplineInterpolateImageFunction<RegImageType, float>::New());
+        break;
+
+    case rpi::INTERPOLATOR_SINUS_CARDINAL:
+        resampler->SetInterpolator(itk::WindowedSincInterpolateImageFunction<
+                                   RegImageType,
+                                   RegImageType::ImageDimension,
+                                   itk::Function::HammingWindowFunction<RegImageType::ImageDimension>,
+                                   itk::ConstantBoundaryCondition<RegImageType>,
+                                   float
+                                   >::New());
+        break;
+    }
     
     try {
         resampler->Update();

@@ -42,7 +42,7 @@ public:
 
     QWidget *logWidget, *LCCWidget, *commonWidget;
     QLineEdit * iterationsLine;
-    QComboBox * updateRuleComboBox, * gradientTypeComboBox;
+    QComboBox * updateRuleComboBox, * gradientTypeComboBox, * interpolatorTypeComboBox;
     QSpinBox * bchExpansionSpinBox;
     QDoubleSpinBox *sigmaISpinBox, *similaritySigmaSpinBox, *updateFieldSigmaSpinBox,
         *velocityFieldSigmaSpinBox, *maxStepLengthSpinBox;
@@ -89,8 +89,8 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medRegistrationAbstr
 
 
     d->updateRuleComboBox =  new QComboBox();
-    d->updateRuleComboBox->insertItem(0, "Choose update rule");
-    d->updateRuleComboBox->insertItem(1, "Log");
+    d->updateRuleComboBox->insertItem(0, "SSD Non Symmetric Log Domain");
+    d->updateRuleComboBox->insertItem(1, "SSD Symmetric Log Domain");
     d->updateRuleComboBox->insertItem(2, "LCC");
     connect ( d->updateRuleComboBox, SIGNAL ( activated ( int ) ), this, SLOT ( chooseUpdateRule ( int ) ) );
 
@@ -167,6 +167,17 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medRegistrationAbstr
     bchExpansionLayout->addWidget(bchExpansionLabel);
     bchExpansionLayout->addWidget(d->bchExpansionSpinBox);
 
+    QLabel * interpolatorTypeLabel = new QLabel("Interpolator Type:");
+    d->interpolatorTypeComboBox = new QComboBox();
+    d->interpolatorTypeComboBox->insertItem(0, "Nearest Neighbor");
+    d->interpolatorTypeComboBox->insertItem(1, "Linear");
+    d->interpolatorTypeComboBox->insertItem(2, "B-Spline");
+    d->interpolatorTypeComboBox->insertItem(3, "Sinus Cardinal");
+    QHBoxLayout * interpolatorTypeLayout = new QHBoxLayout();
+    interpolatorTypeLayout->addWidget(interpolatorTypeLabel);
+    interpolatorTypeLayout->addWidget(d->interpolatorTypeComboBox);
+    d->interpolatorTypeComboBox->setCurrentIndex(1);
+
     QPushButton *runButton = new QPushButton(tr("Run"), this);
 
     d->progression_stack = new medProgressionStack(widget);
@@ -193,6 +204,7 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medRegistrationAbstr
     commonLayout->addLayout(updateFieldSigmaLayout);
     commonLayout->addLayout(velocityFieldSigmaLayout);
     commonLayout->addLayout(bchExpansionLayout);
+    commonLayout->addLayout(interpolatorTypeLayout);
     d->commonWidget = new QWidget(this);
     d->commonWidget->setLayout(commonLayout);
 
@@ -209,7 +221,8 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medRegistrationAbstr
     this->addWidget(widget);
     
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
-    chooseUpdateRule(0);
+    d->updateRuleComboBox->setCurrentIndex(2);
+    chooseUpdateRule(2);
 }
 
 LCCLogDemonsToolBox::~LCCLogDemonsToolBox()
@@ -236,6 +249,9 @@ void LCCLogDemonsToolBox::chooseUpdateRule(int choice)
 
     if(choice == 0)
     {
+        d->logWidget->show();
+        d->commonWidget->show();
+        d->updateRule = 1;
     }
     else if (choice == 1)
     {
@@ -300,6 +316,7 @@ void LCCLogDemonsToolBox::run()
     process_Registration->setVelocityFieldSigma(d->velocityFieldSigmaSpinBox->value());
     process_Registration->setNumberOfTermsBCHExpansion((unsigned int)d->bchExpansionSpinBox->value());
     process_Registration->useMask(false); //Should we allow the use of mask ?
+    process_Registration->setInterpolatorType(d->interpolatorTypeComboBox->currentIndex());
 
     try {
         process_Registration->setNumberOfIterations(
