@@ -11,7 +11,6 @@ LINK_DIRECTORIES ( ${PROJECT_BINARY_DIR}/lib )
 set(BUILD_SHARED_LIBS FALSE)
 
 if (LOG_DEMONS_BUILD_PLUGIN)
-  find_package(medInria-superProject REQUIRED)
   add_subdirectory(medInriaPlugin)
 endif()
 
