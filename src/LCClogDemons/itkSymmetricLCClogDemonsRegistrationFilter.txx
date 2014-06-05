@@ -20,12 +20,9 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SymmetricLCClogDemonsRegistrationFilter()
 {
   DemonsRegistrationFunctionPointer drfpf = DemonsRegistrationFunctionType::New();
-  this->SetDifferenceFunction( static_cast<FiniteDifferenceFunctionType *>(
-                                 drfpf.GetPointer() ) );
-
+  this->SetDifferenceFunction( drfpf );
   DemonsRegistrationFunctionPointer drfpb = DemonsRegistrationFunctionType::New();
-  this->SetBackwardDifferenceFunction( static_cast<FiniteDifferenceFunctionType *>(
-                                          drfpb.GetPointer() ) );
+  this->SetBackwardDifferenceFunction( drfpb );
   
   m_Multiplier = MultiplyByConstantType::New();
   m_Multiplier->InPlaceOn();
@@ -210,7 +207,7 @@ template <class TFixedImage, class TMovingImage, class TField>
 typename
 SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>::TimeStepType
 SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
-::ThreadedCalculateChange(const ThreadRegionType &regionToProcess, int)
+::ThreadedCalculateChange(const ThreadRegionType &regionToProcess, ThreadIdType)
 {
   typedef typename VelocityFieldType::RegionType      RegionType;
   typedef typename VelocityFieldType::SizeType        SizeType;

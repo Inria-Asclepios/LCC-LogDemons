@@ -436,19 +436,13 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
         typedef  typename  itk::LCCDeformableRegistrationFilter< TFixedImage, TMovingImage, FieldContainerType>
             BaseRegistrationFilterType;
 
-       
-
-		typename BaseRegistrationFilterType::Pointer filter;
 		typename MultiResLocalRegistrationFilterType::Pointer multires = MultiResLocalRegistrationFilterType::New();
-
 				
 
                 // Create the "actual" registration filter, and set it to the existing filter
                 typedef  typename  itk::SymmetricLCClogDemonsRegistrationFilter< TFixedImage, TMovingImage, FieldContainerType>
                         ActualRegistrationFilterType;
 		typename ActualRegistrationFilterType::Pointer actualfilter = ActualRegistrationFilterType::New();
-                filter = actualfilter;
-	
 
         multires->SetSimilarityCriteriaStandardDeviationsWorldUnit( this->m_SimilarityCriteriaStandardDeviation);
 		multires->SetSigmaI( this->m_SigmaI);
@@ -456,8 +450,8 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
 
         if (m_verbosity)
 		{	
-            typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResLocalRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::Pointer observer =
-                DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResLocalRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::New();
+            typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResLocalRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::Pointer observer =
+                DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResLocalRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::New();
 
 			    if ( m_TrueField )
 			      {
@@ -472,16 +466,16 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
                               }
 
 
-			filter->AddObserver( itk::IterationEvent(), observer );
+			actualfilter->AddObserver( itk::IterationEvent(), observer );
 			
-            typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResLocalRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::Pointer multiresobserver =
-                DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResLocalRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::New();
+            typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResLocalRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::Pointer multiresobserver =
+                DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResLocalRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::New();
 		        multires->AddObserver( itk::IterationEvent(), multiresobserver );
 		}
 
 		multires->SetFixedImage(         fixedImage );
 		multires->SetMovingImage(        movingImage );
-		multires->SetRegistrationFilter( filter );
+		multires->SetRegistrationFilter( actualfilter );
 		multires->SetNumberOfLevels(     this->m_iterations.size() );
 		multires->SetNumberOfIterations( &m_iterations[0] );
 
@@ -590,12 +584,12 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
                 filter = actualfilter;
 
 		/*Add observers*/
-        typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::Pointer observer =
-        DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::New();
+        typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::Pointer observer =
+        DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::New();
 		filter->AddObserver( itk::IterationEvent(), observer );
 
-        typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::Pointer multiresobserver =
-            DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::New();
+        typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::Pointer multiresobserver =
+            DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::New();
 		multires->AddObserver( itk::IterationEvent(), multiresobserver );
 
 
@@ -617,12 +611,12 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
                 filter = actualfilter;
 	
 		/*Add observers*/
-        typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::Pointer observer =
-        DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::New();
+        typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::Pointer observer =
+        DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::New();
 		filter->AddObserver( itk::IterationEvent(), observer );
 	     
-            typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::Pointer multiresobserver =
-            DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,PixelType, TFixedImage::ImageDimension>::New();
+            typename DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::Pointer multiresobserver =
+            DemonsCommandIterationUpdate<BaseRegistrationFilterType,MultiResRegistrationFilterType,TTransformScalarType, TFixedImage::ImageDimension>::New();
 	        multires->AddObserver( itk::IterationEvent(), multiresobserver );
 
             }

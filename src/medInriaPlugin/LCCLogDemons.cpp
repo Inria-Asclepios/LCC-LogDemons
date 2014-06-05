@@ -48,9 +48,9 @@ public:
     template <typename PixelType>
     bool writeTransform(const QString& file);
     
-    rpi::LCClogDemons< RegImageType, RegImageType, float > * registrationMethod;
-    rpi::LCClogDemons< RegImageType, RegImageType, float >::UpdateRule updateRule;
-    rpi::LCClogDemons< RegImageType, RegImageType, float >::GradientType gradientType;
+    rpi::LCClogDemons< RegImageType, RegImageType, double > * registrationMethod;
+    rpi::LCClogDemons< RegImageType, RegImageType, double >::UpdateRule updateRule;
+    rpi::LCClogDemons< RegImageType, RegImageType, double >::GradientType gradientType;
     std::vector<unsigned int> iterations;
     double maxStepLength, similarityCriteriaSigma, sigmaI, updateFieldSigma, velocityFieldSigma;
     unsigned int BCHExpansion;
@@ -90,7 +90,7 @@ bool LCCLogDemons::registered()
 
 void LCCLogDemons::setUpdateRule(int rule)
 {
-    d->updateRule = (rpi::LCClogDemons< RegImageType, RegImageType, float >::UpdateRule)rule;
+    d->updateRule = (rpi::LCClogDemons< RegImageType, RegImageType, double >::UpdateRule)rule;
 }
 
 void LCCLogDemons::setVerbosity(bool verbose)
@@ -110,7 +110,7 @@ void LCCLogDemons::setMaximumUpdateStepLength(double value)
 
 void LCCLogDemons::setGradientType(int value)
 {
-    d->gradientType = (rpi::LCClogDemons< RegImageType, RegImageType, float >::GradientType)value;;
+    d->gradientType = (rpi::LCClogDemons< RegImageType, RegImageType, double >::GradientType)value;
 }
 
 void LCCLogDemons::setUseHistogramMatching(bool flag)
@@ -173,7 +173,7 @@ QString LCCLogDemons::description() const
 template <typename PixelType>
 int LCCLogDemonsPrivate::update()
 {
-    registrationMethod = new rpi::LCClogDemons<RegImageType,RegImageType,float> ();
+    registrationMethod = new rpi::LCClogDemons<RegImageType,RegImageType,double> ();
     proc->fixedImage().GetPointer()->SetSpacing(proc->movingImages()[0].GetPointer()->GetSpacing());
 
     registrationMethod->SetFixedImage((const RegImageType*) proc->fixedImage().GetPointer());
@@ -211,9 +211,9 @@ int LCCLogDemonsPrivate::update()
     
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
     
-    typedef itk::ResampleImageFilter< RegImageType,RegImageType, float>    ResampleFilterType;
+    typedef itk::ResampleImageFilter< RegImageType,RegImageType, double> ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
-    resampler->SetTransform(registrationMethod->GetTransformation());
+    resampler->SetTransform(registrationMethod->GetDisplacementFieldTransformation());
     resampler->SetInput((const RegImageType*)proc->movingImages()[0].GetPointer());
     resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
     resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
@@ -225,7 +225,7 @@ int LCCLogDemonsPrivate::update()
     switch(interpolatorType) {
 
     case rpi::INTERPOLATOR_NEAREST_NEIGHBOR:
-        resampler->SetInterpolator(itk::NearestNeighborInterpolateImageFunction<RegImageType, float>::New());
+        resampler->SetInterpolator(itk::NearestNeighborInterpolateImageFunction<RegImageType, double>::New());
         break;
 
     case rpi::INTERPOLATOR_LINEAR:
@@ -233,7 +233,7 @@ int LCCLogDemonsPrivate::update()
         break;
 
     case rpi::INTERPOLATOR_BSLPINE:
-        resampler->SetInterpolator(itk::BSplineInterpolateImageFunction<RegImageType, float>::New());
+        resampler->SetInterpolator(itk::BSplineInterpolateImageFunction<RegImageType, double>::New());
         break;
 
     case rpi::INTERPOLATOR_SINUS_CARDINAL:
@@ -242,7 +242,7 @@ int LCCLogDemonsPrivate::update()
                                    RegImageType::ImageDimension,
                                    itk::Function::HammingWindowFunction<RegImageType::ImageDimension>,
                                    itk::ConstantBoundaryCondition<RegImageType>,
-                                   float
+                                   double
                                    >::New());
         break;
     }
@@ -260,6 +260,7 @@ int LCCLogDemonsPrivate::update()
     
     if (proc->output())
         proc->output()->setData (result);
+
     return 0;
 }
 
@@ -280,7 +281,7 @@ bool LCCLogDemonsPrivate::writeTransform(const QString& file)
     if (registrationMethod)
     {
         try{
-            rpi::writeDisplacementFieldTransformation<float, 3>(registrationMethod->GetTransformation(),
+            rpi::writeDisplacementFieldTransformation<double, 3>(registrationMethod->GetTransformation(),
                                                                 file.toStdString());
         }
         catch (std::exception)
@@ -306,6 +307,9 @@ bool LCCLogDemons::writeTransform(const QString& file)
 
 itk::Transform<double,3,3>::Pointer LCCLogDemons::getTransform()
 {
+    if (d->registrationMethod)
+        return d->registrationMethod->GetDisplacementFieldTransformation().GetPointer();
+    
     return NULL;
 }
 

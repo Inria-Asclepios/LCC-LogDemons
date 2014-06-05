@@ -189,7 +189,7 @@ class ITK_EXPORT LocalCriteriaOptimizer :
 
 	protected:
 		  LocalCriteriaOptimizer();
-		  virtual ~LocalCriteriaOptimizer(){};
+        virtual ~LocalCriteriaOptimizer(){}
 		  void PrintSelf(std::ostream& os, Indent indent) const;
 
 		  

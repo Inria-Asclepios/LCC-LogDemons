@@ -33,8 +33,8 @@ if (UNIX AND NOT APPLE)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--exclude-libs,ALL")
 endif()
 
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
+find_package(MEDINRIA REQUIRED)
+include(${MEDINRIA_USE_FILE})
 
 find_package(ITK REQUIRED)
 if(ITK_FOUND)
@@ -75,7 +75,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   medGui
-  itkProcessRegistration
+  medRegistration
   ITKCommon
   ITKIOImageBase
   ITKIOBMP

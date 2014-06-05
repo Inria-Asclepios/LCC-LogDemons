@@ -25,8 +25,7 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
   this->RemoveRequiredInputName( "Primary" );
 #endif
 
-    typename DefaultRegistrationType::Pointer registrator = DefaultRegistrationType::New();
-    m_RegistrationFilter = static_cast<RegistrationType*>( registrator.GetPointer() );
+    m_RegistrationFilter = DefaultRegistrationType::New();
 
     ///\todo Choose the right type of pyramid
 #if ( ITK_VERSION_MAJOR == 3 && ITK_VERSION_MINOR == 12 && ITK_VERSION_PATCH == 0 )

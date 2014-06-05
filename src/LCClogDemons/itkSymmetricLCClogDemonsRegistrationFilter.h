@@ -133,7 +133,7 @@ protected:
   /** Does the actual work of calculating change over a region supplied by
    * the multithreading mechanism. */
   virtual TimeStepType ThreadedCalculateChange(
-     const ThreadRegionType &regionToProcess, int threadId);
+     const ThreadRegionType &regionToProcess, ThreadIdType threadId);
 
   /** Apply update. */
 #if (ITK_VERSION_MAJOR < 4)

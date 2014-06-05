@@ -27,7 +27,7 @@
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>
@@ -275,26 +275,24 @@ void LCCLogDemonsToolBox::run()
     if(!this->parentToolBox())
         return;
     medRegistrationSelectorToolBox * parentTB = this->parentToolBox();
-    dtkSmartPointer <dtkAbstractProcess> process;
+    dtkSmartPointer <medAbstractRegistrationProcess> process;
     
     if (this->parentToolBox()->process() &&
         (parentTB->process()->identifier() == "LCCLogDemons"))
     {
         process = parentTB->process();
-        
     }
     else
     {
         process = dtkAbstractProcessFactory::instance()->createSmartPointer("LCCLogDemons");
         parentTB->setProcess(process);
     }
-    dtkAbstractData *fixedData = parentTB->fixedData();
-    dtkAbstractData *movingData = parentTB->movingData();
     
+    dtkSmartPointer <medAbstractData> fixedData = parentTB->fixedData();
+    dtkSmartPointer <medAbstractData> movingData = parentTB->movingData();
     
     if (!fixedData || !movingData)
         return;
-    
     
     LCCLogDemons *process_Registration = dynamic_cast<LCCLogDemons *>(process.data());
     if (!process_Registration)
@@ -302,6 +300,7 @@ void LCCLogDemonsToolBox::run()
         qWarning() << "registration process doesn't exist" ;
         return;
     }
+
     process_Registration->setUpdateRule(d->updateRule);
     process_Registration->setVerbosity(true);
 
@@ -329,8 +328,8 @@ void LCCLogDemonsToolBox::run()
         return;
     }
     
-    process->setInput(fixedData,  0);
-    process->setInput(movingData, 1);
+    process_Registration->setFixedInput(fixedData);
+    process_Registration->setMovingInput(movingData);
     
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess (process);
