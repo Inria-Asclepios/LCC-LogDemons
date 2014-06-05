@@ -16,8 +16,8 @@
 
 #include <QtGui>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -237,7 +237,7 @@ bool LCCLogDemonsToolBox::registered()
     return medToolBoxFactory::instance()->
     registerToolBox<LCCLogDemonsToolBox>("LCCLogDemonsToolBox",
                                tr("LCC Log Demons"),
-                               tr("short tooltip description"),
+                               tr("LCC Log-Demons implementation"),
                                QStringList() << "registration");
 }
 
@@ -274,27 +274,22 @@ void LCCLogDemonsToolBox::run()
     
     if(!this->parentToolBox())
         return;
-    medRegistrationSelectorToolBox * parentTB = this->parentToolBox();
-    dtkSmartPointer <medAbstractRegistrationProcess> process;
+
+    medAbstractRegistrationProcess *process;
+    process = dynamic_cast<medAbstractRegistrationProcess*> (dtkAbstractProcessFactory::instance()->create("LCCLogDemons"));
     
-    if (this->parentToolBox()->process() &&
-        (parentTB->process()->identifier() == "LCCLogDemons"))
-    {
-        process = parentTB->process();
-    }
-    else
-    {
-        process = dtkAbstractProcessFactory::instance()->createSmartPointer("LCCLogDemons");
-        parentTB->setProcess(process);
-    }
+    if(!process)
+        return;
     
-    dtkSmartPointer <medAbstractData> fixedData = parentTB->fixedData();
-    dtkSmartPointer <medAbstractData> movingData = parentTB->movingData();
+    this->parentToolBox()->setProcess(process);
+    
+    dtkSmartPointer <medAbstractData> fixedData (this->parentToolBox()->fixedData());
+    dtkSmartPointer <medAbstractData> movingData (this->parentToolBox()->movingData());
     
     if (!fixedData || !movingData)
         return;
     
-    LCCLogDemons *process_Registration = dynamic_cast<LCCLogDemons *>(process.data());
+    LCCLogDemons *process_Registration = dynamic_cast<LCCLogDemons *>(process);
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
@@ -347,6 +342,6 @@ void LCCLogDemonsToolBox::run()
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progression_stack, SLOT(setActive(QObject*,bool)));
     
-    medJobManager::instance()->registerJobItem(runProcess);
+    medJobManager::instance()->registerJobItem(runProcess,process->identifier());
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }

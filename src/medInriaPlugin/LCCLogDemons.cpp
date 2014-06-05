@@ -48,9 +48,9 @@ public:
     template <typename PixelType>
     bool writeTransform(const QString& file);
     
-    rpi::LCClogDemons< RegImageType, RegImageType, double > * registrationMethod;
-    rpi::LCClogDemons< RegImageType, RegImageType, double >::UpdateRule updateRule;
-    rpi::LCClogDemons< RegImageType, RegImageType, double >::GradientType gradientType;
+    rpi::LCClogDemons< RegImageType, RegImageType, TransformScalarType > * registrationMethod;
+    rpi::LCClogDemons< RegImageType, RegImageType, TransformScalarType >::UpdateRule updateRule;
+    rpi::LCClogDemons< RegImageType, RegImageType, TransformScalarType >::GradientType gradientType;
     std::vector<unsigned int> iterations;
     double maxStepLength, similarityCriteriaSigma, sigmaI, updateFieldSigma, velocityFieldSigma;
     unsigned int BCHExpansion;
@@ -66,6 +66,9 @@ LCCLogDemons::LCCLogDemons() : itkProcessRegistration(), d(new LCCLogDemonsPriva
 {
     d->proc = this;
     d->registrationMethod = NULL;
+    
+    //set transform type for the exportation of the transformation to a file
+    this->setProperty("transformType","nonRigid");
 }
 
 LCCLogDemons::~LCCLogDemons()
@@ -90,7 +93,7 @@ bool LCCLogDemons::registered()
 
 void LCCLogDemons::setUpdateRule(int rule)
 {
-    d->updateRule = (rpi::LCClogDemons< RegImageType, RegImageType, double >::UpdateRule)rule;
+    d->updateRule = (rpi::LCClogDemons< RegImageType, RegImageType, TransformScalarType >::UpdateRule)rule;
 }
 
 void LCCLogDemons::setVerbosity(bool verbose)
@@ -110,7 +113,7 @@ void LCCLogDemons::setMaximumUpdateStepLength(double value)
 
 void LCCLogDemons::setGradientType(int value)
 {
-    d->gradientType = (rpi::LCClogDemons< RegImageType, RegImageType, double >::GradientType)value;
+    d->gradientType = (rpi::LCClogDemons< RegImageType, RegImageType, TransformScalarType >::GradientType)value;
 }
 
 void LCCLogDemons::setUseHistogramMatching(bool flag)
@@ -155,14 +158,18 @@ void LCCLogDemons::useMask (bool flag)
 
 void LCCLogDemons::setInterpolatorType(int value)
 {
-    d->interpolatorType = value;;
+    d->interpolatorType = value;
 }
 
 QString LCCLogDemons::description() const
 {
-    return "LCCLogDemons";
+    return "LCC Log-Demons";
 }
 
+QString LCCLogDemons::identifier() const
+{
+    return "LCCLogDemons";
+}
 
 
 // /////////////////////////////////////////////////////////////////
@@ -173,19 +180,24 @@ QString LCCLogDemons::description() const
 template <typename PixelType>
 int LCCLogDemonsPrivate::update()
 {
-    registrationMethod = new rpi::LCClogDemons<RegImageType,RegImageType,double> ();
-    proc->fixedImage().GetPointer()->SetSpacing(proc->movingImages()[0].GetPointer()->GetSpacing());
+    registrationMethod = new rpi::LCClogDemons<RegImageType,RegImageType,TransformScalarType>();
+    //proc->fixedImage().GetPointer()->SetSpacing(proc->movingImages()[0].GetPointer()->GetSpacing());
 
-    registrationMethod->SetFixedImage((const RegImageType*) proc->fixedImage().GetPointer());
-    registrationMethod->SetMovingImage((const RegImageType*) proc->movingImages()[0].GetPointer());
+    registrationMethod->SetFixedImage((RegImageType*) proc->fixedImage().GetPointer());
+    registrationMethod->SetMovingImage((RegImageType*) proc->movingImages()[0].GetPointer());
     
     registrationMethod->SetUpdateRule(updateRule);
     registrationMethod->SetVerbosity(verbose);
 
     //Log
     registrationMethod->SetMaximumUpdateStepLength(maxStepLength);
-    registrationMethod->SetGradientType(gradientType);
-    registrationMethod->SetUseHistogramMatching(useHistogramMatching);
+    if (updateRule != rpi::LCClogDemons<RegImageType,RegImageType,TransformScalarType>::UPDATE_SYMMETRIC_LOCAL_LOG_DOMAIN)
+    {
+        registrationMethod->SetGradientType(gradientType);
+        registrationMethod->SetUseHistogramMatching(useHistogramMatching);
+    }
+    else
+        registrationMethod->SetUseHistogramMatching(false);
     
     registrationMethod->SetNumberOfIterations(iterations);
     registrationMethod->SetBoundaryCheck(boundaryCheck);
@@ -315,7 +327,7 @@ itk::Transform<double,3,3>::Pointer LCCLogDemons::getTransform()
 
 QString LCCLogDemons::getTitleAndParameters()
 {
-    return QString();
+    return "LCC Log-Demons";
 }
 
 // /////////////////////////////////////////////////////////////////

@@ -337,8 +337,7 @@ template < class TFixedImage, class TMovingImage, class TTransformScalarType >
 void
 LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::SetMaskImage(MovingImageType * MaskImage)
 {
-   m_MaskImage= MovingImageType::New(); 
-   this->m_MaskImage = MaskImage;
+   m_MaskImage = MaskImage;
 }
 
 template < class TFixedImage, class TMovingImage, class TTransformScalarType >

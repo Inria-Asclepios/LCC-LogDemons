@@ -35,6 +35,7 @@ public:
     virtual ~LCCLogDemons();
 
     virtual QString description() const;
+    virtual QString identifier() const;
     static bool registered();
     
     virtual void setUpdateRule(int rule);
