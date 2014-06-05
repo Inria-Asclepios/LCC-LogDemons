@@ -108,6 +108,10 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## #################################################################
 ## Install rules
 ## #################################################################
+if (PLUGINS_PATH)
+  set_property(TARGET ${PROJECT_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_PATH})
+  set_property(TARGET ${PROJECT_NAME} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${PLUGINS_PATH})
+endif()
 
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION plugins
