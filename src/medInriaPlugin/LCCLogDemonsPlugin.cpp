@@ -48,11 +48,13 @@ LCCLogDemonsPlugin::~LCCLogDemonsPlugin()
 
 bool LCCLogDemonsPlugin::initialize()
 {
-    if(!LCCLogDemons::registered())
+    if(!LCCLogDemons::registered()) {
         dtkWarn() << "Unable to register LCCLogDemons type";
+    }
     
-    if(!LCCLogDemonsToolBox::registered())
+    if(!LCCLogDemonsToolBox::registered()) {
         dtkWarn() << "Unable to register LCCLogDemons toolbox";
+    }
     
     return true;
 }

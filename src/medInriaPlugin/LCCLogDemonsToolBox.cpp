@@ -234,11 +234,7 @@ LCCLogDemonsToolBox::~LCCLogDemonsToolBox()
 
 bool LCCLogDemonsToolBox::registered()
 {
-    return medToolBoxFactory::instance()->
-    registerToolBox<LCCLogDemonsToolBox>("LCCLogDemonsToolBox",
-                               tr("LCC Log Demons"),
-                               tr("short tooltip description"),
-                               QStringList() << "registration");
+    return medToolBoxFactory::instance()->registerToolBox<LCCLogDemonsToolBox>();
 }
 
 void LCCLogDemonsToolBox::chooseUpdateRule(int choice)
