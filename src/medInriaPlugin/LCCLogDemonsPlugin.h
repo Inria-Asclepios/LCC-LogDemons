@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkPlugin.h>
+#include <dtkCoreSupport/dtkPlugin.h>
 
 #include "LCCLogDemonsPluginExport.h"
 
@@ -22,6 +22,7 @@ class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsPluginPrivate;
 class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsPlugin : public dtkPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "fr.inria.LCCLogDemonsPlugin" FILE "LCCLogDemonsPlugin.json")
     Q_INTERFACES(dtkPlugin)
     
 public:
@@ -46,5 +47,3 @@ public:
 private:
     LCCLogDemonsPluginPrivate *d;
 };
-
-

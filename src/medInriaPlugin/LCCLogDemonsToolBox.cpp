@@ -16,16 +16,14 @@
 
 #include <QtGui>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
+#include <medAbstractRegistrationProcess.h>
 
 #include <medAbstractView.h>
 #include <medRunnableProcess.h>
-#include <medJobManager.h>
+#include <medJobManagerL.h>
 
 #include <medAbstractImageData.h>
 
@@ -59,25 +57,8 @@ LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medRegistrationAbstr
     QWidget *widget = new QWidget(this);
 
     QVBoxLayout * layout = new QVBoxLayout();
-    
-    //QFormLayout *layout = new QFormLayout(widget);
-    //
-    //medGroupBox * advancedBox = new medGroupBox(this);
-    //advancedBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    //advancedBox->setTitle(tr("Advanced Parameters"));
-    //advancedBox->setCollapsible(true);
-    //advancedBox->setCheckable(true);
-    //advancedBox->setChecked(false);
-    //advancedBox->setStyleSheet("medGroupBox {margin: 10px;}");
-    //QWidget * advancedWidgets = new QWidget(advancedBox);
-    //QFormLayout *advancedformLayout = new QFormLayout(advancedWidgets);
-    //QVBoxLayout * vlayout = new QVBoxLayout(advancedBox);
-    //vlayout->addWidget(advancedWidgets);
 
     //// Standard parameters
-    //d->doubleIterations = new QCheckBox();
-    //layout->addRow(new QLabel(tr("Double "),this),d->doubleIterations);
-
     d->iterationsLine = new QLineEdit();
     d->iterationsLine->setText("15x10x5");
     d->iterationsLine->setToolTip(tr("Each number of iteration per level must be separated by \"x\". From coarser to finest levels"));
@@ -270,8 +251,9 @@ void LCCLogDemonsToolBox::run()
     
     if(!this->parentToolBox())
         return;
+
     medRegistrationSelectorToolBox * parentTB = this->parentToolBox();
-    dtkSmartPointer <medAbstractRegistrationProcess> process;
+    medAbstractRegistrationProcess *process;
     
     if (this->parentToolBox()->process() &&
         (parentTB->process()->identifier() == "LCCLogDemons"))
@@ -280,17 +262,17 @@ void LCCLogDemonsToolBox::run()
     }
     else
     {
-        process = dtkAbstractProcessFactory::instance()->createSmartPointer("LCCLogDemons");
+        process = new LCCLogDemons;
         parentTB->setProcess(process);
     }
     
-    dtkSmartPointer <medAbstractData> fixedData = parentTB->fixedData();
-    dtkSmartPointer <medAbstractData> movingData = parentTB->movingData();
+    medAbstractData *fixedData = parentTB->fixedData();
+    medAbstractData *movingData = parentTB->movingData();
     
     if (!fixedData || !movingData)
         return;
     
-    LCCLogDemons *process_Registration = dynamic_cast<LCCLogDemons *>(process.data());
+    LCCLogDemons *process_Registration = dynamic_cast<LCCLogDemons *>(process);
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
@@ -343,6 +325,6 @@ void LCCLogDemonsToolBox::run()
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progression_stack, SLOT(setActive(QObject*,bool)));
     
-    medJobManager::instance()->registerJobItem(runProcess);
+    medJobManagerL::instance()->registerJobItem(runProcess);
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }

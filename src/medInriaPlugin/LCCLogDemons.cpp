@@ -12,10 +12,7 @@
 =========================================================================*/
 
 #include "LCCLogDemons.h"
-
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCoreSupport/dtkAbstractProcessFactory.h>
 
 // /////////////////////////////////////////////////////////////////
 //

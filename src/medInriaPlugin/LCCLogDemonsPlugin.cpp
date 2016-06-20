@@ -111,9 +111,8 @@ QStringList LCCLogDemonsPlugin::types() const
 {
     return QStringList() << "LCCLogDemons";
 }
+
 QStringList LCCLogDemonsPlugin::dependencies() const
 {
     return QStringList();
 }
-
-Q_EXPORT_PLUGIN2(LCCLogDemonsPlugin, LCCLogDemonsPlugin)

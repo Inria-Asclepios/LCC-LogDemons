@@ -1,31 +1,28 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.1.0)
 
-project(LCCLogDemonsPlugin)
+set(TARGET_NAME LCCLogDemonsPlugin)
 
 ## #################################################################
 ## Setup version numbering
 ## #################################################################
 
-set(${PROJECT_NAME}_VERSION_MAJOR 1 CACHE STRING "${PROJECT_NAME} major version number." FORCE)
-set(${PROJECT_NAME}_VERSION_MINOR 0 CACHE STRING "${PROJECT_NAME} minor version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number." FORCE)
-set(${PROJECT_NAME}_VERSION
-  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
+set(${TARGET_NAME}_VERSION_MAJOR 3 CACHE STRING "${TARGET_NAME} major version number." FORCE)
+set(${TARGET_NAME}_VERSION_MINOR 0 CACHE STRING "${TARGET_NAME} minor version number." FORCE)
+set(${TARGET_NAME}_VERSION_BUILD 0 CACHE STRING "${TARGET_NAME} build version number." FORCE)
+set(${TARGET_NAME}_VERSION
+  "${${TARGET_NAME}_VERSION_MAJOR}.${${TARGET_NAME}_VERSION_MINOR}.${${TARGET_NAME}_VERSION_BUILD}")
 
-mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
+mark_as_advanced(${TARGET_NAME}_VERSION_BUILD)
 
-string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
+string(TOUPPER ${TARGET_NAME} TARGET_NAME_UP)
+add_definitions(-D${TARGET_NAME_UP}_VERSION="${${TARGET_NAME}_VERSION}")
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 ## #################################################################
 ## Resolve dependencies
 ## #################################################################
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
-include(dtkPlugin)
 
 if (UNIX AND NOT APPLE)
 # Don't export unnecessary symbols, otherwise possible crash on exit
@@ -33,13 +30,41 @@ if (UNIX AND NOT APPLE)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--exclude-libs,ALL")
 endif()
 
-find_package(MEDINRIA REQUIRED)
-include(${MEDINRIA_USE_FILE})
+find_package(dtk REQUIRED)
+include_directories(${dtk_INCLUDE_DIRS})
+
+find_package(medInria REQUIRED)
+
+include(list_source_files)
+include(list_header_directories_to_include)
 
 find_package(ITK REQUIRED)
-if(ITK_FOUND)
-   include(${ITK_USE_FILE})
-endif(ITK_FOUND)
+include(${ITK_USE_FILE})
+
+SET(ITKIO_LIBRARIES
+  ITKIOImageBase
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGE
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ${ITKIOPhilipsREC_LIBRARIES}
+  ITKIOTIFF
+  ITKIOVTK
+  ITKIOTransformBase
+  ITKIOTransformInsightLegacy
+  ITKIOTransformHDF5
+  ITKIOTransformMatlab
+  ITKIOMRC
+)
 
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
@@ -48,71 +73,56 @@ include(${RPI_USE_FILE})
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  LCCLogDemonsPlugin.h
-  LCCLogDemonsToolBox.h
-  LCCLogDemons.h)
+list_source_files(${TARGET_NAME}
+  .
+  )
 
-set(${PROJECT_NAME}_SOURCES
-  LCCLogDemonsPlugin.cpp
-  LCCLogDemonsToolBox.cpp
-  LCCLogDemons.cpp
+list_header_directories_to_include(${TARGET_NAME}
+  ${${TARGET_NAME}_HEADERS}
   )
 
 ## #################################################################
 ## Build rules
 ## #################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+add_library(${TARGET_NAME} SHARED
+  ${${TARGET_NAME}_CFILES}
+  ${${TARGET_NAME}_QRC}
+  )
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES})
+## #############################################################################
+## include directories.
+## #############################################################################
 
-target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
+target_include_directories(${TARGET_NAME}
+  PRIVATE ${${TARGET_NAME}_INCLUDE_DIRS}
+  )
+# PRIVATE because plugins are not supposed to be used somewhere else
+
+## #############################################################################
+## Link
+## #############################################################################
+
+target_link_libraries(${TARGET_NAME}
+  Qt5::Core
   dtkLog
-  dtkCore
-  medCore
+  dtkCoreSupport
+  medCoreLegacy
   medRegistration
-  ITKCommon
-  ITKIOImageBase
-  ITKIOBMP
-  ITKIOLSM
-  ITKIOJPEG
-  ITKIOPNG
-  ITKIOVTK
-  ITKIOGDCM
-  ITKNrrdIO
-  ITKIONRRD
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIOGIPL
-  ITKIOHDF5
-  ITKIOBioRad
-  ITKIOStimulate
-  ITKIOMRC
+  ${ITKIO_LIBRARIES}
   libLCClogDemons
 )
 
-## #################################################################
-## Source file layout in development environments like Visual Studio
-## #################################################################
-
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
-
-
+if (PLUGINS_LEGACY_PATH)
+  set_property(TARGET ${TARGET_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_LEGACY_PATH})
+  set_property(TARGET ${TARGET_NAME} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${PLUGINS_LEGACY_PATH})
+endif()
 
 ## #################################################################
 ## Install rules
 ## #################################################################
-if (PLUGINS_PATH)
-  set_property(TARGET ${PROJECT_NAME} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PLUGINS_PATH})
-  set_property(TARGET ${PROJECT_NAME} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${PLUGINS_PATH})
-endif()
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+install(TARGETS ${TARGET_NAME}
+  RUNTIME DESTINATION plugins_legacy
+  LIBRARY DESTINATION plugins_legacy
+  ARCHIVE DESTINATION plugins_legacy)
