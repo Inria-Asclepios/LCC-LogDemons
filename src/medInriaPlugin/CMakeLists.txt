@@ -41,6 +41,11 @@ include(list_header_directories_to_include)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(Qt5 COMPONENTS REQUIRED
+  Core
+  Network
+)
+
 SET(ITKIO_LIBRARIES
   ITKIOImageBase
   ITKIOBMP
