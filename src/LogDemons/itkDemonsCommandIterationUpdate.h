@@ -85,7 +85,7 @@ public:
       return;
       }
 
-    typename DeformationFieldType::ConstPointer deffield = 0;
+    typename DeformationFieldType::ConstPointer deffield = nullptr;
     unsigned int iter = -1;
     double metricbefore = -1.0;
     

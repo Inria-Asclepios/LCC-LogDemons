@@ -219,7 +219,7 @@ int main( int argc, char ** argv )
     }
    }
 
-  maxnorm2 /= vnl_math_sqr(minpixelspacing);
+  maxnorm2 /= (minpixelspacing * minpixelspacing);
 
 
   /**
@@ -242,7 +242,7 @@ int main( int argc, char ** argv )
   /**
    *  Scaling and Squaring: maxnorm(v)/2^numiter<0.5
    **/
-    numiter = static_cast<unsigned int> (2.0 + 0.5 * vcl_log(maxnorm2)/vnl_math::ln2+0.5);
+    numiter = static_cast<unsigned int> (2.0 + 0.5 * std::log(maxnorm2)/vnl_math::ln2+0.5);
     divider = static_cast<float>(1<<numiter);
    }
 

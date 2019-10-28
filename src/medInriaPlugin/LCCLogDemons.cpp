@@ -307,7 +307,7 @@ itk::Transform<double,3,3>::Pointer LCCLogDemons::getTransform()
     if (d->registrationMethod)
         return d->registrationMethod->GetDisplacementFieldTransformation().GetPointer();
     
-    return NULL;
+    return nullptr;
 }
 
 QString LCCLogDemons::getTitleAndParameters()

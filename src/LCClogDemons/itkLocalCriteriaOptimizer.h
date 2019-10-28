@@ -9,6 +9,7 @@
 #include "itkMultiplyImageFilter.h"
 #include "itkImageIterator.h"
 #include "itkImage.h"
+#include <mutex>
 
 namespace itk
 {
@@ -251,7 +252,7 @@ class ITK_EXPORT LocalCriteriaOptimizer :
         VectorImagePointer 		m_InverseField;
 
 		TimeStepType                    m_TimeStep;	
-		mutable SimpleFastMutexLock     m_MetricCalculationLock;
+        mutable std::mutex m_MetricCalculationLock;
 
         bool                            m_UseMask;
 

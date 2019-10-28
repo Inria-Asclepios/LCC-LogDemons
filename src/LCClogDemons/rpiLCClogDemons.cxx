@@ -489,11 +489,9 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
 
 
 		// Set the field interpolator
-        typedef  itk::VectorLinearInterpolateNearestNeighborExtrapolateImageFunction< FieldContainerType, double >  FieldInterpolatorType;
+        typedef  itk::NearestNeighborInterpolateImageFunction< FieldContainerType, double >  FieldInterpolatorType;
 		typename FieldInterpolatorType::Pointer interpolator = FieldInterpolatorType::New();
 		multires->GetFieldExpander()->SetInterpolator( interpolator );
-
-
 
         multires->SetRegularizationType(this->GetRegularizationType());
         if (this->GetRegularizationType()==0)
@@ -640,7 +638,7 @@ LCClogDemons< TFixedImage, TMovingImage, TTransformScalarType >::StartRegistrati
 
 
     // Set the field interpolator
-    typedef  itk::VectorLinearInterpolateNearestNeighborExtrapolateImageFunction< FieldContainerType, double >  FieldInterpolatorType;
+    typedef  itk::NearestNeighborInterpolateImageFunction< FieldContainerType, double >  FieldInterpolatorType;
     typename FieldInterpolatorType::Pointer interpolator = FieldInterpolatorType::New();
     multires->GetFieldExpander()->SetInterpolator( interpolator );
 

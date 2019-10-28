@@ -634,7 +634,7 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
 {   
   GlobalDataStruct * globalData = (GlobalDataStruct *) gd;
     
-  m_MetricCalculationLock.Lock();
+  m_MetricCalculationLock.lock();
   m_LCC += globalData->m_LCC;
   m_NumberOfPixelsProcessed += globalData->m_NumberOfPixelsProcessed;
   m_SumOfSquaredChange += globalData->m_SumOfSquaredChange;
@@ -642,10 +642,10 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
     {     
     m_Metric = m_LCC /
                static_cast<double>( m_NumberOfPixelsProcessed );
-    m_RMSChange = vcl_sqrt( m_SumOfSquaredChange /
+    m_RMSChange = std::sqrt( m_SumOfSquaredChange /
                static_cast<double>( m_NumberOfPixelsProcessed ) );
     }
-  m_MetricCalculationLock.Unlock();
+  m_MetricCalculationLock.unlock();
 
   delete globalData;
 } 

@@ -742,10 +742,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
     if ( this->m_StandardDeviationWorldUnit )
     {
         double s = field->GetSpacing()[j];
-        variance = vnl_math_sqr( StandardDeviations[j]/s );
+        variance = StandardDeviations[j] * StandardDeviations[j] / (s * s);
     }
     else
-        variance = vnl_math_sqr( StandardDeviations[j] );
+        variance = StandardDeviations[j] * StandardDeviations[j];
 
 
     oper->SetVariance( variance );

@@ -84,8 +84,7 @@ public:
    * in order to inform the pipeline execution model.
    *
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
-  virtual void GenerateInputRequestedRegion()
-  throw (InvalidRequestedRegionError);
+  virtual void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** ImageDimension constants */
   itkStaticConstMacro( InputFieldDimension, unsigned int,

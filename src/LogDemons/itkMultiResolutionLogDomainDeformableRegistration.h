@@ -7,7 +7,7 @@
 #include "itkLogDomainDeformableRegistrationFilter.h"
 #include "itkLogDomainDemonsRegistrationFilter.h"
 #include "itkMultiResolutionPyramidImageFilter.h"
-#include "itkVectorResampleImageFilter.h"
+#include "itkResampleImageFilter.h"
 
 #include <vector>
 
@@ -133,7 +133,7 @@ public:
   typedef typename MovingImagePyramidType::Pointer MovingImagePyramidPointer;
 
   /** The velocity field expander type. */
-  typedef VectorResampleImageFilter<VelocityFieldType, VelocityFieldType>
+  typedef ResampleImageFilter<VelocityFieldType, VelocityFieldType>
   FieldExpanderType;
   typedef typename FieldExpanderType::Pointer FieldExpanderPointer;
 

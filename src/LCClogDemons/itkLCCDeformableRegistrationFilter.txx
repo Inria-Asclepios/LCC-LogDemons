@@ -992,10 +992,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
         double variance;
         if ( this->m_StandardDeviationWorldUnit )
         {   double s = field->GetSpacing()[j];
-            variance = vnl_math_sqr( StandardDeviations[j] ) / (s*s);
+            variance = ( StandardDeviations[j] * StandardDeviations[j] ) / (s*s);
         }
         else
-            variance = vnl_math_sqr( StandardDeviations[j] );
+            variance = StandardDeviations[j] * StandardDeviations[j];
 
         //std::cout << "Standard deviation : " << StandardDeviations[j] << std::endl;
 
