@@ -407,7 +407,7 @@ public:
   /**
    * Gets the trade-off coefficient. 
    */
-  const double * GetSigmaI(void) const
+  double GetSigmaI(void) const
   {
       return(this->m_SigmaI );
   }
