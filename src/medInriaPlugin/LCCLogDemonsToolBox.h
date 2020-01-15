@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <medRegistrationAbstractToolBox.h>
+#include <medAbstractSelectableToolBox.h>
 #include "LCCLogDemonsPluginExport.h"
 
 class LCCLogDemonsToolBoxPrivate;
 
-class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsToolBox : public medRegistrationAbstractToolBox
+class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsToolBox : public medAbstractSelectableToolBox
 {
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("LCC Log Demons",
@@ -28,8 +28,10 @@ class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsToolBox : public medRegistrationAbst
 public:
     LCCLogDemonsToolBox(QWidget *parent = 0);
     ~LCCLogDemonsToolBox();
-    
-public:
+
+	dtkPlugin * plugin() override;
+	medAbstractData * processOutput() override;
+
     static bool registered();
     
 public slots:
