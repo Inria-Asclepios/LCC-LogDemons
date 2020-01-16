@@ -16,6 +16,7 @@
 
 #include <QtGui>
 
+#include <medPluginManager.h>
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <dtkCoreSupport/dtkAbstractProcessFactory.h>
@@ -50,7 +51,7 @@ public:
     medProgressionStack * progression_stack;
 };
 
-LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new LCCLogDemonsToolBoxPrivate)
+LCCLogDemonsToolBox::LCCLogDemonsToolBox(QWidget *parent) : medAbstractSelectableToolBox(parent), d(new LCCLogDemonsToolBoxPrivate)
 {
     this->setTitle("LCCLogDemons");
     
@@ -213,6 +214,31 @@ LCCLogDemonsToolBox::~LCCLogDemonsToolBox()
     d = NULL;
 }
 
+dtkPlugin * LCCLogDemonsToolBox::plugin()
+{
+	medPluginManager* pm = medPluginManager::instance();
+	dtkPlugin* plugin = pm->plugin("LCC Log Demons");
+	return plugin;
+}
+
+medAbstractData * LCCLogDemonsToolBox::processOutput()
+{
+	// If called from pipelines, and run() not called before.
+	if (static_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->process() == nullptr)
+	{
+		run();
+	}
+
+	if (static_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->process() != nullptr)
+	{
+		return static_cast<medRegistrationSelectorToolBox*>(selectorToolBox())->process()->output();
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 bool LCCLogDemonsToolBox::registered()
 {
     return medToolBoxFactory::instance()->registerToolBox<LCCLogDemonsToolBox>();
@@ -248,15 +274,14 @@ void LCCLogDemonsToolBox::chooseUpdateRule(int choice)
 
 void LCCLogDemonsToolBox::run()
 {
-    
-    if(!this->parentToolBox())
-        return;
 
-    medRegistrationSelectorToolBox * parentTB = this->parentToolBox();
+    medRegistrationSelectorToolBox *parentTB = dynamic_cast<medRegistrationSelectorToolBox*>(selectorToolBox());
     medAbstractRegistrationProcess *process;
     
-    if (this->parentToolBox()->process() &&
-        (parentTB->process()->identifier() == "LCCLogDemons"))
+    if(parentTB == nullptr)
+        return;
+    
+    if (parentTB->process() && (parentTB->process()->identifier() == "LCCLogDemons"))
     {
         process = parentTB->process();
     }
