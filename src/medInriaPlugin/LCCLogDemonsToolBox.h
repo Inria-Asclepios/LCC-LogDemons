@@ -23,7 +23,7 @@ class LCCLogDemonsPLUGIN_EXPORT LCCLogDemonsToolBox : public medAbstractSelectab
     Q_OBJECT
     MED_TOOLBOX_INTERFACE("LCC Log Demons",
                           "LCC Log Demons ToolBox",
-                          << "registration")
+                          << "Registration")
     
 public:
     LCCLogDemonsToolBox(QWidget *parent = 0);
