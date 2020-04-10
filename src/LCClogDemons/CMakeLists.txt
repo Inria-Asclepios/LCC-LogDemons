@@ -1,5 +1,5 @@
 # Project name
-PROJECT ( LCC_LOG_DEMONS )
+PROJECT ( LCCLogDemons )
 
 
 FIND_PACKAGE( ITK )

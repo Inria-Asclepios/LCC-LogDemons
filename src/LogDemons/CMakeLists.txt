@@ -1,5 +1,5 @@
 # Project name
-PROJECT( LOG_DEMONS )
+PROJECT( SSDLog_Demons )
 
 # Define the minimum CMake version needed
 CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )

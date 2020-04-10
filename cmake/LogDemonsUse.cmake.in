@@ -1,0 +1,14 @@
+if(NOT LogDemons_USE_FILE_INCLUDED)
+
+    set(LogDemons_USE_FILE_INCLUDED 1)
+
+    include_directories(${LogDemons_INCLUDE_DIRS})
+    foreach(LIBRARY_DIR ${LogDemons_LIBRARY_DIRS})
+        if (EXISTS ${LIBRARY_DIR})
+            link_directories(${LIBRARY_DIR})
+        endif()
+    endforeach()
+
+   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LogDemons_CMAKE_DIRS})
+   
+endif()
