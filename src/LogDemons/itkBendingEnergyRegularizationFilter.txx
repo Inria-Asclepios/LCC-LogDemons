@@ -64,7 +64,7 @@ void BendingEnergyRegularizationFilter<TImage>::BeforeThreadedGenerateData()
 
 template<class TImage>
 void BendingEnergyRegularizationFilter<TImage>
-::ThreadedGenerateData(const typename Superclass::OutputImageRegionType& outputRegionForThread, int threadId)
+::DynamicThreadedGenerateData(const typename Superclass::OutputImageRegionType& outputRegionForThread)
 {
   typename TImage::ConstPointer input = this->GetInput();
   typename TImage::Pointer output = this->GetOutput();

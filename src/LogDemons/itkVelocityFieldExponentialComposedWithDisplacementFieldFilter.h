@@ -7,10 +7,6 @@
 
 namespace itk
 {
-#if ITK_VERSION_MAJOR < 4 && ! defined (ITKv3_THREAD_ID_TYPE_DEFINED)
-#define ITKv3_THREAD_ID_TYPE_DEFINED 1
-    typedef int ThreadIdType;
-#endif
 
 /**
    \class VelocityFieldExponentialComposedWithDisplacementFieldFilter
@@ -79,9 +75,9 @@ protected:
   {
   }
 
-  void BeforeThreadedGenerateData(void);
+  void BeforeThreadedGenerateData(void) ITK_OVERRIDE;
 
-  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
+  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) ITK_OVERRIDE;
 
 private:
   VelocityFieldExponentialComposedWithDisplacementFieldFilter(const Self &);

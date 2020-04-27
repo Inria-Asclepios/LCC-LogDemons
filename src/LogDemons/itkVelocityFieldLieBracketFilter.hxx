@@ -128,16 +128,12 @@ VelocityFieldLieBracketFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 VelocityFieldLieBracketFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData( const OutputFieldRegionType & outputRegionForThread,
-                        ThreadIdType threadId)
+::DynamicThreadedGenerateData(const OutputFieldRegionType & outputRegionForThread)
 {
   // Get the input and output pointers
   InputFieldConstPointer leftField = this->GetInput(0);
   InputFieldConstPointer rightField = this->GetInput(1);
   OutputFieldPointer     outputPtr = this->GetOutput();
-
-  // Progress tracking
-  ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels() );
 
   // Input and output iterators/
   typedef ImageRegionConstIterator<InputFieldType> InputFieldIteratorType;
@@ -170,7 +166,6 @@ VelocityFieldLieBracketFilter<TInputImage, TOutputImage>
     ++leftIter;
     ++rightIter;
     ++outputIter;
-    progress.CompletedPixel(); // potential exception thrown here
     }
 }
 

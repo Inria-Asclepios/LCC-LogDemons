@@ -7,11 +7,6 @@
 namespace itk
 {
 
-#if ITK_VERSION_MAJOR < 4 && ! defined (ITKv3_THREAD_ID_TYPE_DEFINED)
-#define ITKv3_THREAD_ID_TYPE_DEFINED 1
-    typedef int ThreadIdType;
-#endif
-
 /** \class TransformToVelocityFieldSource
  * \brief Generate a velocity field from a input transform. The
  * exponential of the velocity and the input transform should represent the
@@ -146,7 +141,7 @@ public:
   virtual void GenerateOutputInformation( void );
 
   /** Just checking if transform is set. */
-  virtual void BeforeThreadedGenerateData( void );
+  virtual void BeforeThreadedGenerateData( void ) ITK_OVERRIDE;
 
   /** Compute the Modified Time based on changes to the components. */
   unsigned long GetMTime( void ) const;
@@ -169,11 +164,11 @@ protected:
 
   /** TransformToVelocityFieldSource can be implemented as a multithreaded
    * filter. */
-  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId );
+  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) ITK_OVERRIDE;
 
   /** Faster implementation for resampling that works for with linear
    *  incremental transformation types. */
-  void LinearThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId );
+  void LinearThreadedGenerateData(const OutputImageRegionType & outputRegionForThread);
 
 private:
 
