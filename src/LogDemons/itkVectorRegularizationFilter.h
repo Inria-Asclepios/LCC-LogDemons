@@ -83,8 +83,6 @@ protected:
   VectorRegularizationFilter();
   ~VectorRegularizationFilter(){}
  
-  //virtual void BeforeThreadedGenerateData();
- 
   virtual void GenerateData();
 
   

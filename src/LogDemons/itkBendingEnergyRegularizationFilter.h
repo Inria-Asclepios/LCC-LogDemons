@@ -51,12 +51,10 @@ protected:
   BendingEnergyRegularizationFilter();
   ~BendingEnergyRegularizationFilter(){}
  
-  virtual void BeforeThreadedGenerateData();
+  virtual void BeforeThreadedGenerateData() ITK_OVERRIDE;
  
   /** Does the real work. */
-  virtual void ThreadedGenerateData(const typename Superclass::OutputImageRegionType& outputRegionForThread, int threadId);
-
-
+  virtual void DynamicThreadedGenerateData(const typename Superclass::OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
  
 private:
   BendingEnergyRegularizationFilter(const Self &); //purposely not implemented

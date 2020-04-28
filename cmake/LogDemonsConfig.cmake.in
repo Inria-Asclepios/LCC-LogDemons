@@ -1,0 +1,27 @@
+# ################################
+# VERSION INFORMATIONS
+# ################################
+set(LogDemons_VERSION_MAJOR  "1")
+set(LogDemons_VERSION_MINOR  "1")
+set(LogDemons_VERSION_BUILD  "0")
+set(LogDemons_VERSION        "1.1.0")
+
+# ################################
+# VARIABLES
+# ################################
+set(LogDemons_INCLUDE_DIRS @PROJECT_SOURCE_DIR@/src/LCClogDemons @PROJECT_SOURCE_DIR@/src/LogDemons @PROJECT_SOURCE_DIR@/src/SVFLogJacobian)
+set(LogDemons_LIBRARY_DIRS @CMAKE_ARCHIVE_OUTPUT_DIRECTORY@ @CMAKE_ARCHIVE_OUTPUT_DIRECTORY@/Debug @CMAKE_ARCHIVE_OUTPUT_DIRECTORY@/Release @CMAKE_ARCHIVE_OUTPUT_DIRECTORY@/MinSizeRel @CMAKE_ARCHIVE_OUTPUT_DIRECTORY@/RelWithDebInfo)
+set(LogDemons_CMAKE_DIRS   @PROJECT_SOURCE_DIR@/cmake)
+set(LogDemons_USE_FILE     @LogDemons_BINARY_DIR@/LogDemonsUse.cmake)
+
+# ################################
+# LIBRARIES
+# ################################
+add_library (LIBSVFLogJacobian UNKNOWN IMPORTED)
+find_library(LIBSVFLogJacobian_LIBRARY NAMES LIBSVFLogJacobian PATHS ${LogDemons_LIBRARY_DIRS})
+set_target_properties(LIBSVFLogJacobian PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LogDemons_INCLUDE_DIRS}" IMPORTED_LOCATION ${LIBSVFLogJacobian_LIBRARY})
+
+add_library (RPILCClogDemons UNKNOWN IMPORTED)
+find_library(RPILCClogDemons_LIBRARY NAMES RPILCClogDemons PATHS ${LogDemons_LIBRARY_DIRS})
+set_target_properties(RPILCClogDemons PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${LogDemons_INCLUDE_DIRS}" IMPORTED_LOCATION ${RPILCClogDemons_LIBRARY})
+
