@@ -539,7 +539,7 @@ int main(int argc, char** argv)
 
 
     // Only scalar images are supported yet
-    if (  fixed_imageIO->GetPixelType() != itk::ImageIOBase::SCALAR  ||  moving_imageIO->GetPixelType() != itk::ImageIOBase::SCALAR  )
+    if (  fixed_imageIO->GetPixelType() != itk::IOPixelEnum::SCALAR  ||  moving_imageIO->GetPixelType() != itk::IOPixelEnum::SCALAR  )
     {
         std::cerr << "Error: Only scalar images are supported yet." << std::endl;
         return EXIT_FAILURE;

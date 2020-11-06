@@ -202,9 +202,9 @@ typedef itk::ImageDuplicator< TImageType > DuplicatorType;
  typename RGFType::Pointer DGF1=RGFType::New();
  typename RGFType::Pointer DGF2=RGFType::New();
 
- DGF0->SetOrder(RGFType::ZeroOrder);
- DGF1->SetOrder(RGFType::ZeroOrder);
- DGF2->SetOrder(RGFType::ZeroOrder);
+ DGF0->SetZeroOrder();
+ DGF1->SetZeroOrder();
+ DGF2->SetZeroOrder();
 
   DGF0->SetSigma( Sigma[0] );
   DGF1->SetSigma( Sigma[1] );
