@@ -116,13 +116,14 @@ itk::SmartPointer<TImageType1> DivisionV(itk::SmartPointer<TImageType1> Image1, 
   
   typename TImageType1::PixelType vector;
   for( It.GoToBegin(); !It.IsAtEnd(); ++It )
-    {
+  {
       IndexV=It.GetIndex();	
       for (int i=0;i<dim;++i)
+      {
         vector[i]=Image1->GetPixel(IndexV)[i]/Image2->GetPixel(IndexV);
-        It.Set(vector);
-          
-    }
+      }
+      It.Set(vector);    
+  }
 
   return(output);
 }
@@ -194,8 +195,16 @@ typedef itk::ImageDuplicator< TImageType > DuplicatorType;
  typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
  
  duplicator->SetInputImage(InputImage);
- duplicator->Update();
 
+  try
+  {
+      duplicator->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
  typedef  itk::RecursiveGaussianImageFilter <TImageType,TImageType> RGFType;
  typename RGFType::Pointer DGF0=RGFType::New();
@@ -215,11 +224,35 @@ typedef itk::ImageDuplicator< TImageType > DuplicatorType;
  DGF2->SetDirection(2);
 
   DGF0->SetInput(duplicator->GetOutput());
-  DGF0->Update();
+  try
+  {
+    DGF0->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   DGF1->SetInput(DGF0->GetOutput());
-  DGF1->Update();
+  try
+  {
+    DGF1->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   DGF2->SetInput(DGF1->GetOutput());
-  DGF2->Update();
+  try
+  {
+    DGF2->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
   return(DGF2->GetOutput());
 }
@@ -234,8 +267,16 @@ itk::SmartPointer<TImageType1> BoundarySmoothing(itk::SmartPointer<TImageType1> 
      scaler->SetOutputMinimum(0 );
      scaler->SetOutputMaximum( 1 );
      scaler->SetInput(Image);
-     scaler->Update();
 
+      try
+      {
+          scaler->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
      typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
 
     
@@ -274,65 +315,6 @@ itk::SmartPointer<TImageType1> BoundarySmoothing(itk::SmartPointer<TImageType1> 
     return(output);
    }
   else return(Image);
-/* typedef typename itk::Statistics::ScalarImageToHistogramGenerator<
-                                 TImageType1 > HistogramGeneratorType;
-
- typename  HistogramGeneratorType::Pointer histogramGenerator =
-                                        HistogramGeneratorType::New(); 
-
-  histogramGenerator->SetInput( Image );
-
-  histogramGenerator->SetNumberOfBins( 256 );
-  histogramGenerator->SetMarginalScale( 10.0 );
-
-  histogramGenerator->SetHistogramMin( -0.5 );
-  histogramGenerator->SetHistogramMax( 255.5 ); 
-
-  histogramGenerator->Compute();
-
- typedef typename HistogramGeneratorType::HistogramType HistogramType;
-
- const HistogramType * histogram = histogramGenerator->GetOutput();
- 
- 
- typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
-
-    
- typename TImageType1::IndexType IndexV;
-
- typename TImageType1::Pointer output = TImageType1::New();
- output->SetRegions(Image->GetBufferedRegion());
- output->SetOrigin(Image->GetOrigin());
- output->SetSpacing(Image->GetSpacing());
- output->SetDirection(Image->GetDirection());
- output->Allocate();
-
- IteratorType It = IteratorType( output, Image->GetBufferedRegion());
-  
- double min=10e10,a,m;
-
- for( It.GoToBegin(); !It.IsAtEnd(); ++It )
-    {
-      IndexV=It.GetIndex();	
-      a=Image->GetPixel(IndexV);
-      if (a>histogram->Quantile(0,0.6))
-        {
-         It.Set(a);
-         if (min>a) min=a;
-        }
-      else 
-        It.Set(0);	
-    }
-
-  for( It.GoToBegin(); !It.IsAtEnd(); ++It )
-    {
-      IndexV=It.GetIndex();
-      if (It.Get()==0)
-	It.Set(min);  
-    }
-  return(output);
-*/
-
 }
 
 
@@ -340,7 +322,10 @@ template<class TFixedImage,class TMovingImage, class TDeformationField>
 LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
 ::LocalCriteriaOptimizer()
 {
-for (int i=0;i<FixedImageDimension;++i)   m_Sigma[i]=10;
+for (unsigned int i=0;i<FixedImageDimension;++i)
+{
+    m_Sigma[i]=10;
+}
 
 typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
 m_MovingImageInterpolator = static_cast<InterpolatorType*>(interp.GetPointer() );
@@ -396,10 +381,11 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
 IndexType indexV=it.GetIndex();
 
 
-for ( int i = 0; i < FixedImageDimension; ++i)
+for ( unsigned int i = 0; i < FixedImageDimension; ++i)
+{
     update[i]=1/(pow(m_SmoothedSimGrad->GetPixel(indexV).GetNorm(),2)+
     (m_SigmaI)/ (pow(m_SimilarityImage->GetPixel(indexV),2)) )*m_SmoothedSimGrad->GetPixel(indexV)[i];
-
+}
 
 if ( globalData )
  {
@@ -426,8 +412,6 @@ void
 LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
 ::InitializeIteration(void)
 {
-
-
   if( !this->GetMovingImage() || !this->GetFixedImage()
       || !m_MovingImageInterpolator )
     {
@@ -458,7 +442,16 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
   m_MovingImageWarper->SetEdgePaddingValue( 0 );
   m_MovingImageWarper->SetDisplacementField( this->GetDisplacementField() );
   m_MovingImageWarper->GetOutput()->SetRequestedRegion( this->GetDisplacementField()->GetRequestedRegion() );
-  m_MovingImageWarper->Update();
+
+  try
+  {
+      m_MovingImageWarper->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
  
   m_FixedImageWarper->SetOutputOrigin( this->m_FixedImageOrigin );
   m_FixedImageWarper->SetOutputSpacing( this->m_FixedImageSpacing );
@@ -467,7 +460,16 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
   m_FixedImageWarper->SetEdgePaddingValue( 0 );
   m_FixedImageWarper->SetDisplacementField( this->GetInverseDeformationField() );
   m_FixedImageWarper->GetOutput()->SetRequestedRegion( this->GetInverseDeformationField()->GetRequestedRegion() );
-  m_FixedImageWarper->Update();
+
+  try
+  {
+      m_FixedImageWarper->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
   if (m_UseMask==true)
    {
@@ -480,7 +482,16 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
       m_MaskImageWarper->SetEdgePaddingValue( 0 );
       m_MaskImageWarper->SetDisplacementField( this->GetDisplacementField() );
       m_MaskImageWarper->GetOutput()->SetRequestedRegion( this->GetDisplacementField()->GetRequestedRegion() );
-      m_MaskImageWarper->Update();
+
+      try
+      {
+          m_MaskImageWarper->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
 
    }
 
@@ -539,15 +550,30 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
 typedef  itk::GradientImageFilter<MovingImageType> GradientMType;
 typename GradientMType::Pointer GradientM = GradientMType::New();
 GradientM->SetInput(MovImage);
-GradientM->Update();
+
+  try
+  {
+      GradientM->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
 typedef  itk::GradientImageFilter<FixedImageType> GradientFType;
 typename GradientFType::Pointer GradientF = GradientFType::New();
 GradientF->SetInput(FixImage);
-GradientF->Update();
 
-
-
+  try
+  {
+      GradientF->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
   typedef typename itk::ImageRegionIterator <VectorImageType> VectIteratorType;
 
@@ -579,7 +605,7 @@ GradientF->Update();
       IndexV=ItF.GetIndex();	
       IndexV1=ItM.GetIndex();
        
-      for (int i=0;i<FixedImageDimension;++i)
+      for (unsigned int i=0;i<FixedImageDimension;++i)
         {
          vector[i]=GradientF->GetOutput()->GetPixel(IndexV)[i];
          vector1[i]=GradientM->GetOutput()->GetPixel(IndexV1)[i];
@@ -649,13 +675,6 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
 
   delete globalData;
 } 
-
-
-
-
-
-
-
 
 }//end namespace itk
 #endif

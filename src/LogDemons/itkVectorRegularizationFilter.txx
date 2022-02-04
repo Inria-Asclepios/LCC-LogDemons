@@ -57,23 +57,53 @@ void VectorRegularizationFilter<TRealVectorImage>
     {
      m_RealExtractor->SetInput(this->GetInput());
      m_RealExtractor->SetIndex(i);
-     m_RealExtractor->Update();
+
+      try
+      {
+          m_RealExtractor->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
      m_FFTFilter->SetInput(m_RealExtractor->GetOutput());
 
-     if (this->GetOutput()->GetLargestPossibleRegion().GetSize()[0]%2==1)
+      try
       {
-    //   m_FFTInvFilter->SetActualXDimensionIsOdd(true);
+          m_FFTFilter->Update();
       }
-     m_FFTFilter->Update();
-     m_ShiftFilter->SetInput(m_FFTFilter->GetOutput());
-     m_ShiftFilter->SetInverse(false);
-     m_ShiftFilter->Update();
-     m_ComplexImageArray[i]=m_ShiftFilter->GetOutput();
-     m_ComplexImageArray[i]->DisconnectPipeline();
-     m_ComplexComposer->SetInput(i,m_ComplexImageArray[i]);
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
+      m_ShiftFilter->SetInput(m_FFTFilter->GetOutput());
+      m_ShiftFilter->SetInverse(false);
+
+      try
+      {
+          m_ShiftFilter->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
+      m_ComplexImageArray[i]=m_ShiftFilter->GetOutput();
+      m_ComplexImageArray[i]->DisconnectPipeline();
+      m_ComplexComposer->SetInput(i,m_ComplexImageArray[i]);
     }
 
-  m_ComplexComposer->Update();
+  try
+  {
+      m_ComplexComposer->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   m_ComplexSolution=m_ComplexComposer->GetOutput();  
  
   for (int i=0;i<ImageDimension;++i)
@@ -106,24 +136,53 @@ void VectorRegularizationFilter<TRealVectorImage>
     {
      m_ComplexExtractor->SetInput(m_ComplexSolution);
      m_ComplexExtractor->SetIndex(i);
-     m_ComplexExtractor->Update();
-     m_ShiftFilter->SetInput(m_ComplexExtractor->GetOutput());
-     m_ShiftFilter->SetInverse(true);
-     m_ShiftFilter->Update();
-     m_FFTInvFilter->SetInput(m_ShiftFilter->GetOutput());
 
-     if (!m_ShiftFilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0]%2)
+      try
       {
-      // m_FFTInvFilter->SetActualXDimensionIsOdd(true);
+          m_ComplexExtractor->Update();
       }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
+      m_ShiftFilter->SetInput(m_ComplexExtractor->GetOutput());
+      m_ShiftFilter->SetInverse(true);
 
-     m_FFTInvFilter->Update();
+      try
+      {
+          m_ShiftFilter->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
+      m_FFTInvFilter->SetInput(m_ShiftFilter->GetOutput());
+
+      try
+      {
+          m_FFTInvFilter->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
      m_RealImageArray[i]=m_FFTInvFilter->GetOutput();
      m_RealImageArray[i]->DisconnectPipeline();
      m_RealComposer->SetInput(i,m_RealImageArray[i]);
     }   
 
- m_RealComposer->Update();
+  try
+  {
+      m_RealComposer->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
  this->GraftOutput(m_RealComposer->GetOutput());
 }
  

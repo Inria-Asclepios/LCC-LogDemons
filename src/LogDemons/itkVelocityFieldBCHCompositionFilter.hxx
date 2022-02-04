@@ -152,7 +152,16 @@ VelocityFieldBCHCompositionFilter<TInputImage, TOutputImage>
     }
 
   m_Adder->GraftOutput( this->GetOutput() );
-  m_Adder->Update();
+
+  try
+  {
+      m_Adder->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   this->GraftOutput( m_Adder->GetOutput() );
 }
 

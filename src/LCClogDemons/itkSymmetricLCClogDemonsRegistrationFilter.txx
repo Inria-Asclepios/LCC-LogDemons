@@ -122,12 +122,7 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
   // update variables in the equation object
   DemonsRegistrationFunctionType *f = this->GetForwardRegistrationFunctionType();
 
-#if (ITK_VERSION_MAJOR < 4)
   f->SetDisplacementField( this->GetDeformationField() );
-#else
-  f->SetDisplacementField( this->GetDeformationField() );
-#endif
-
   f->SetSigma(this->GetSimilarityCriteriaStandardDeviations());
   f->SetInverseDeformationField( this->GetInverseDeformationField() );
   f->SetSigmaI(this->GetSigmaI());
@@ -209,13 +204,8 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>::TimeSt
 SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::ThreadedCalculateChange(const ThreadRegionType &regionToProcess, ThreadIdType)
 {
-  typedef typename VelocityFieldType::RegionType      RegionType;
   typedef typename VelocityFieldType::SizeType        SizeType;
-  typedef typename VelocityFieldType::SizeValueType   SizeValueType;
-  typedef typename VelocityFieldType::IndexType       IndexType;
-  typedef typename VelocityFieldType::IndexValueType  IndexValueType;
-  typedef typename 
-    FiniteDifferenceFunctionType::NeighborhoodType    NeighborhoodIteratorType;
+  typedef typename FiniteDifferenceFunctionType::NeighborhoodType    NeighborhoodIteratorType;
   typedef ImageRegionIterator<VelocityFieldType>      UpdateIteratorType;
 
   VelocityFieldPointer output = this->GetOutput();
@@ -328,32 +318,38 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
 
   this->SetRMSChange( drfpf->GetRMSChange() );
 
-
   if ( this->m_NumberOfBCHApproximationTerms < 3 )
-    {
+  {
     // If we smooth the update buffer before applying it, then the are
     // approximating a viscuous problem as opposed to an elastic problem
     if ( this->GetSmoothUpdateField() )
-      {
+    {
       this->SmoothUpdateField();
-      }
+    }
 
     // Use time step if necessary. In many cases
     // the time step is one so this will be skipped
     if ( fabs(dt - 1.0)>1.0e-4 )
-      {
+    {
       itkDebugMacro( "Using timestep: " << dt );
       m_Multiplier->SetConstant( dt );
       m_Multiplier->SetInput( this->GetUpdateBuffer() );
       m_Multiplier->GraftOutput( this->GetUpdateBuffer() );
       // in place update
-      m_Multiplier->Update();
+      try
+      {
+        m_Multiplier->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
       // graft output back to this->GetUpdateBuffer()
       this->GetUpdateBuffer()->Graft( m_Multiplier->GetOutput() );
-      }
-	typedef typename itk::ImageFileWriter<VelocityFieldType> WT;
-	typename WT::Pointer W=WT::New();
-
+    }
+    typedef typename itk::ImageFileWriter<VelocityFieldType> WT;
+    typename WT::Pointer W=WT::New();
 
     // Apply update
     m_Adder->SetInput( 0, this->GetOutput() );
@@ -361,10 +357,17 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
     m_Adder->GraftOutput( this->GetOutput() );
     m_Adder->GetOutput()->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
    
- 
     // Triggers in place update
-    m_Adder->Update();
-    
+    try
+    {
+        m_Adder->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
+
     // Region passing stuff
     this->GraftOutput( m_Adder->GetOutput() );
     }
@@ -388,13 +391,29 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
       m_Multiplier->SetInput( this->GetUpdateBuffer() );
       m_Multiplier->GraftOutput( this->GetUpdateBuffer() );
       // in place update
-      m_Multiplier->Update();
+      try
+      {
+          m_Multiplier->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
       this->GetUpdateBuffer()->Graft( m_Multiplier->GetOutput() );
 
       m_Multiplier->SetInput( this->GetBackwardUpdateBuffer() );
       m_Multiplier->GraftOutput( this->GetBackwardUpdateBuffer() );
       // in place update
-      m_Multiplier->Update();
+      try
+      {
+          m_Multiplier->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
       this->GetBackwardUpdateBuffer()->Graft( m_Multiplier->GetOutput() );
       }
 
@@ -411,7 +430,16 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
     bchfilter->SetInput( 1, this->GetUpdateBuffer() );
 
     bchfilter->GetOutput()->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
-    bchfilter->Update();
+    
+    try
+    {
+        bchfilter->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
     VelocityFieldPointer Zf = bchfilter->GetOutput();
     Zf->DisconnectPipeline();
 
@@ -427,7 +455,15 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
     bchfilter->SetInput( 1, this->GetBackwardUpdateBuffer() );
 
     bchfilter->GetOutput()->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
-    bchfilter->Update();
+    try
+    {
+        bchfilter->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
     VelocityFieldPointer Zb = bchfilter->GetOutput();
     Zb->DisconnectPipeline();
 
@@ -447,27 +483,30 @@ SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
     
     // Triggers in place update
     m_Multiplier->GetOutput()->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
-    m_Multiplier->Update();
+    try
+    {
+        m_Multiplier->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
     
     // Region passing stuff
     this->GraftOutput( m_Multiplier->GetOutput() );
     }
 
-
   // Smooth the velocity field
   if (this->GetRegularizationType()==0)
+  {
+    if( this->GetSmoothVelocityField() )
     {
-     if( this->GetSmoothVelocityField() )
-      {
        this->SmoothVelocityField();
-      }
     }
-  else if (this->GetRegularizationType()==1)
-   {
-    this->SmoothVelocityField();
-   }
-
+  }
 }
+
 template <class TFixedImage, class TMovingImage, class TField>
 void
 SymmetricLCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>

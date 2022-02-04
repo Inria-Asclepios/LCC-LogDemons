@@ -90,7 +90,15 @@ DisplacementFieldCompositionFilter<TInputImage, TOutputImage>
   progress->RegisterInternalFilter(m_Adder, 0.4);
 
   // Update the pipeline
-  m_Adder->Update();
+  try
+  {
+      m_Adder->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }    
 
   // Region passing stuff
   this->GraftOutput( m_Adder->GetOutput() );

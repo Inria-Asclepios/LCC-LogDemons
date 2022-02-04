@@ -203,7 +203,7 @@ int LCCLogDemonsPrivate::update()
         qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
         return 1;
     }
-    
+
     time_t t2 = clock();
     
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
@@ -243,7 +243,7 @@ int LCCLogDemonsPrivate::update()
                                    >::New());
         break;
     }
-    
+
     try {
         resampler->Update();
     }
@@ -251,7 +251,7 @@ int LCCLogDemonsPrivate::update()
         qDebug() << e.GetDescription();
         return 1;
     }
-    
+
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
     result->DisconnectPipeline();
     

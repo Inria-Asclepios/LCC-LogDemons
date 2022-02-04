@@ -70,7 +70,6 @@ void
 LCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::InitializeIteration()
 {
-    //std::cout<<"LCClogDemonsRegistrationFilter::InitializeIteration"<<std::endl;
     // update variables in the equation object
     DemonsRegistrationFunctionType *f = this->DownCastDifferenceFunctionType();
 
@@ -199,14 +198,6 @@ LCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::ApplyUpdate(const TimeStepType& dt)
 #endif
 {
-    //std::cout<<"LCClogDemonsRegistrationFilter::ApplyUpdate"<<std::endl;
-    // If we smooth the update buffer before applying it, then the are
-    // approximating a viscuous problem as opposed to an elastic problem
-    /*if ( this->GetSmoothUpdateField() )
-    {
-        this->SmoothUpdateField();
-    }
-*/
     // Use time step if necessary. In many cases
     // the time step is one so this will be skipped
     if ( fabs(dt - 1.0)>1.0e-4 )
@@ -216,7 +207,15 @@ LCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
         m_Multiplier->SetInput( this->GetUpdateBuffer() );
         m_Multiplier->GraftOutput( this->GetUpdateBuffer() );
         // in place update
-        m_Multiplier->Update();
+        try
+        {
+           m_Multiplier->Update();
+        }
+        catch (itk::ExceptionObject & err)
+        {
+            std::cerr << "ExceptionObject caught !" << std::endl;
+            std::cerr << err << std::endl;
+        }
         // graft output back to this->GetUpdateBuffer()
         this->GetUpdateBuffer()->Graft( m_Multiplier->GetOutput() );
     }
@@ -236,21 +235,19 @@ LCClogDemonsRegistrationFilter<TFixedImage,TMovingImage,TField>
     }
     m_BCHFilter->GetOutput()->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
-    // Triggers in place update
-    m_BCHFilter->Update();
+    try
+    {
+        // Triggers in place update
+        m_BCHFilter->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
 
     // Region passing stuff
     this->GraftOutput( m_BCHFilter->GetOutput() );
-
-
-/**Smooth the velocity field
-  *WARNING!!! To implement with the Local Criteria!!!
-  
-    if( this->GetSmoothVelocityField() )
-    {
-        this->SmoothVelocityField(this->GetFixedImage());
-    }
-**/
 }
 
 

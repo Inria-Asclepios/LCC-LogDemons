@@ -70,7 +70,15 @@ DisplacementToVelocityFieldLogFilter<TInputImage, TOutputImage>
     m_ExpComp->SetVelocityField(current);
     m_ExpComp->SetInput( this->GetInput() );
 
-    m_ExpComp->Update();
+    try
+    {
+        m_ExpComp->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
 
     typename InputImageType::Pointer leftField  = m_ExpComp->GetOutput();
     typename InputImageType::Pointer rightField = current;
@@ -97,8 +105,16 @@ DisplacementToVelocityFieldLogFilter<TInputImage, TOutputImage>
 
     m_BCHCalculator->GetOutput()->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
 
-    m_BCHCalculator->Update();
-
+    try
+    {
+        m_BCHCalculator->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
+    
     current = m_BCHCalculator->GetOutput();
     current->DisconnectPipeline();
 

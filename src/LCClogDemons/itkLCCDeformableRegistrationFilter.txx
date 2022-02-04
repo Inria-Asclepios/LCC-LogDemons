@@ -72,13 +72,8 @@ void
 LCCDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::SetInitialVelocityField( VelocityFieldType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
-  this->SetNthInput( 0, ptr );
-#else
-  this->SetNthInput( 0, ptr );
-#endif
+    this->SetNthInput( 0, ptr );
 }
-
 
 // Set the fixed image.
 template <class TFixedImage, class TMovingImage, class TField>
@@ -87,13 +82,8 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetFixedImage(
   const FixedImageType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
-  this->ProcessObject::SetNthInput( 1, const_cast< FixedImageType * >( ptr ) );
-#else
-  this->ProcessObject::SetNthInput( 1, const_cast<FixedImageType *>( ptr ) );
-#endif
+    this->ProcessObject::SetNthInput( 1, const_cast< FixedImageType * >( ptr ) );
 }
-
 
 // Get the fixed image.
 template <class TFixedImage, class TMovingImage, class TField>
@@ -102,14 +92,8 @@ const typename LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::GetFixedImage() const
 {
-  return dynamic_cast< const FixedImageType * >
-#if (ITK_VERSION_MAJOR < 4)
-    ( this->ProcessObject::GetInput( 1 ) );
-#else
-         ( this->ProcessObject::GetInput( 1 ) );
-#endif
+    return dynamic_cast< const FixedImageType * >(this->ProcessObject::GetInput(1));
 }
-
 
 // Set the moving image.
 template <class TFixedImage, class TMovingImage, class TField>
@@ -118,13 +102,8 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetMovingImage(
   const MovingImageType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
-  this->ProcessObject::SetNthInput( 2, const_cast< MovingImageType * >( ptr ) );
-#else
-  this->ProcessObject::SetNthInput( 2, const_cast<MovingImageType *>( ptr ) );
-#endif
+    this->ProcessObject::SetNthInput( 2, const_cast<MovingImageType *>( ptr ) );
 }
-
 
 // Get the moving image.
 template <class TFixedImage, class TMovingImage, class TField>
@@ -133,12 +112,7 @@ const typename LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::GetMovingImage() const
 {
-  return dynamic_cast< const MovingImageType * >
-#if (ITK_VERSION_MAJOR < 4)
-    ( this->ProcessObject::GetInput( 2 ) );
-#else
-         ( this->ProcessObject::GetInput( 2 ) );
-#endif
+  return dynamic_cast< const MovingImageType * >(this->ProcessObject::GetInput(2));
 }
 
 // Set the flag for the mask image.
@@ -165,7 +139,8 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetMaskImage(
   const MovingImageType * ptr )
-{ m_MaskImage = MovingImageType::New(); 
+{ 
+  m_MaskImage = MovingImageType::New(); 
   m_MaskImage =ptr;
 }
 
@@ -304,8 +279,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsWorldUnit( tmp );
 }
 
@@ -348,8 +325,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -422,8 +401,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsWorldUnit( tmp );
 }
 
@@ -466,8 +447,10 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -533,16 +516,16 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 
 }
 
-
-
 template <class TFixedImage, class TMovingImage, class TField>
 void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetSimilarityCriteriaStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetSimilarityCriteriaStandardDeviationsWorldUnit( tmp );
 }
 
@@ -577,16 +560,16 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
     }
 }
 
-
-
 template <class TFixedImage, class TMovingImage, class TField>
 void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetSimilarityCriteriaStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetSimilarityCriteriaStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -627,26 +610,22 @@ const double *
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::GetSimilarityCriteriaStandardDeviations( ) const
 {   
-        static double stDev[ImageDimension] ;
-   for( unsigned int j = 0; j < ImageDimension; j++ )
-      {
-
-          // Computation of the standard deviation (voxel unit) of the Gaussian kernel for the similarity criteria
+    static double stDev[ImageDimension] ;
+    for( unsigned int j = 0; j < ImageDimension; j++ )
+    {
+        // Computation of the standard deviation (voxel unit) of the Gaussian kernel for the similarity criteria
         if ( m_StandardDeviationWorldUnit )
         {   
-	    double s = this->GetFixedImage()->GetSpacing()[j];
+            double s = this->GetFixedImage()->GetSpacing()[j];
             stDev[j] =  this->m_SimilarityCriteriaStandardDeviations[j] / (s);
-           // stDev[j] = s*s*this->m_SimilarityCriteriaStandardDeviations[j];
-
         }
         else
+        {
             stDev[j] =  this->m_SimilarityCriteriaStandardDeviations[j] ;
+        }
      }
-
-      //std::cout<<"Std Dev: "<<stDev[1]<<std::endl;
-
-      return(static_cast<const double*> (stDev)); 
-  }
+    return(static_cast<const double*> (stDev)); 
+}
 
 template <class TFixedImage, class TMovingImage, class TField>
 void
@@ -717,7 +696,6 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::InitializeIteration()
 {
-  //std::cout<<"LCCDeformableRegistrationFilter::InitializeIteration"<<std::endl;
   MovingImageConstPointer movingPtr = this->GetMovingImage();
   FixedImageConstPointer fixedPtr = this->GetFixedImage();
 
@@ -753,11 +731,7 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::CopyInputToOutput()
 {
-#if (ITK_VERSION_MAJOR < 4)
   typename Superclass::InputImageType::ConstPointer  inputPtr  = this->GetInput(0);
-#else
-  typename Superclass::InputImageType::ConstPointer  inputPtr  = this->GetInput(0);
-#endif
 
   if( inputPtr )
     {
@@ -789,14 +763,9 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::GenerateOutputInformation()
 {
-  //std::cout<<"LCCDeformableRegistrationFilter::GenerateOutputInformation"<<std::endl;
   typename DataObject::Pointer output;
 
-#if (ITK_VERSION_MAJOR < 4)
   if( this->GetInput(0) )
-#else
-  if( this->GetInput(0) )
-#endif
     {
     // Initial velocity field is set.
     // Copy information from initial field.
@@ -805,7 +774,7 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
     }
   else if( this->GetFixedImage() )
     {
-    // Initial deforamtion field is not set. 
+    // Initial deformation field is not set. 
     // Copy information from the fixed image.
     for (unsigned int idx = 0; idx < 
            this->GetNumberOfOutputs(); ++idx )
@@ -827,41 +796,32 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::GenerateInputRequestedRegion()
 {
-  //std::cout<<"LCCDeformableRegistrationFilter::GenerateInputRequestedRegion"<<std::endl;
   // call the superclass's implementation
   Superclass::GenerateInputRequestedRegion();
 
   // request the largest possible region for the moving image
-  MovingImagePointer movingPtr = 
-    const_cast< MovingImageType * >( this->GetMovingImage() );
+  MovingImagePointer movingPtr = const_cast< MovingImageType * >(this->GetMovingImage());
   if( movingPtr )
-    {
+  {
     movingPtr->SetRequestedRegionToLargestPossibleRegion();
-    }
+  }
   
   // just propagate up the output requested region for
   // the fixed image and initial velocity field.
-#if (ITK_VERSION_MAJOR < 4)
-  VelocityFieldPointer inputPtr = 
-    const_cast< VelocityFieldType * >( this->GetInput(0) );
-#else
-  VelocityFieldPointer inputPtr =
-    const_cast<VelocityFieldType *>( this->GetInput(0) );
-#endif
-
+  VelocityFieldPointer inputPtr = const_cast< VelocityFieldType * >( this->GetInput(0) );
   VelocityFieldPointer outputPtr = this->GetOutput();
-  FixedImagePointer fixedPtr = 
-    const_cast< FixedImageType *>( this->GetFixedImage() );
+
+  FixedImagePointer fixedPtr = const_cast< FixedImageType *>( this->GetFixedImage() );
 
   if( inputPtr )
-    {
+  {
     inputPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
-    }
+  }
 
   if( fixedPtr )
-    {
+  {
     fixedPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
-    }
+  }
 }
 
 
@@ -882,7 +842,6 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::Initialize()
 {
-  //std::cout<<"LCCDeformableRegistrationFilter::Initialize"<<std::endl;
   this->Superclass::Initialize();
   m_StopRegistrationFlag = false;
 }
@@ -894,36 +853,14 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SmoothVelocityField()
 { 
-
-  if (m_RegularizationType == 1)
-    {
-
-      /*
-      float param[2];
-       param[0]=m_HarmonicWeight;
-       param[1]=m_BendingWeight;
-
-       typedef typename itk::VectorRegularizationFilter<VelocityFieldType> RegularizerType;
-       //std::cout<<param[0]<<" "<<param[1]<<std::endl;
-
-       typename RegularizerType::Pointer Regularizer=RegularizerType::New();
-       Regularizer->SetInput(this->GetOutput());
-       Regularizer->SetFactor(param);
-
-       Regularizer->Update();
-
-       this->GraftOutput(Regularizer->GetOutput());
-       */
-      }
-  else if (m_RegularizationType == 0)
-    {
+  if (m_RegularizationType == 0)
+  {
      if (this->GetSmoothVelocityField())
-        {
+     {
          // The output buffer will be overwritten with new data.
          this->SmoothGivenField(this->GetOutput(), this->m_StandardDeviations);
-        }
-    }
- 
+     }
+  }
 }
 
 // Smooth update field using a separable Gaussian kernel
@@ -932,21 +869,11 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SmoothUpdateField()
 {
-
- if (m_RegularizationType == 0)
-  {
-    /*double variance[ImageDimension];
-    for( unsigned int j = 0; j < ImageDimension; j++ )
-      {
-       double s = this->GetUpdateBuffer()->GetSpacing()[j];
-       variance[j] = this->m_UpdateFieldStandardDeviations[j]/(s) ;
-      }*/
-    this->SmoothGivenField(this->GetUpdateBuffer(), this->m_UpdateFieldStandardDeviations);//this->m_UpdateFieldStandardDeviations);
-   }
- else {}
-
+    if (m_RegularizationType == 0)
+    {
+        this->SmoothGivenField(this->GetUpdateBuffer(), this->m_UpdateFieldStandardDeviations);
+    }
 }
-
 
 // Smooth velocity using a separable Gaussian kernel
 template <class TFixedImage, class TMovingImage, class TField>
@@ -954,7 +881,6 @@ void
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SmoothGivenField(VelocityFieldType * field, const double StandardDeviations[ImageDimension])
 {
-
     // copy field to TempField
     m_TempField->SetOrigin( field->GetOrigin() );
     m_TempField->SetSpacing( field->GetSpacing() );
@@ -997,7 +923,6 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
         else
             variance = StandardDeviations[j] * StandardDeviations[j];
 
-        //std::cout << "Standard deviation : " << StandardDeviations[j] << std::endl;
 
         // Set other parameters
         oper->SetVariance( variance );
@@ -1008,7 +933,16 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
         // todo: make sure we only smooth within the buffered region
         smoother->SetOperator( *oper );
         smoother->SetInput( field );
-        smoother->Update();
+
+        try
+        {
+            smoother->Update();
+        }
+        catch (itk::ExceptionObject & err)
+        {
+            std::cerr << "ExceptionObject caught !" << std::endl;
+            std::cerr << err << std::endl;
+        }
 
         if ( j < ImageDimension - 1 )
         {
@@ -1042,11 +976,19 @@ typename LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::GetDeformationField()
 { 
-
-  //std::cout<<"LCCDeformableRegistration::GetDeformationField"<<std::endl;
   m_Exponentiator->SetInput( this->GetVelocityField() );
   m_Exponentiator->GetOutput()->SetRequestedRegion( this->GetVelocityField()->GetRequestedRegion() );
-  m_Exponentiator->Update();
+
+  try
+  {
+      m_Exponentiator->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }  
+
   return m_Exponentiator->GetOutput();
 }
 
@@ -1057,10 +999,19 @@ typename LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::GetInverseDeformationField()
 {
-  //std::cout<<"LCCDeformableRegistration::GetInverseDeformationField"<<std::endl;
   m_InverseExponentiator->SetInput( this->GetVelocityField() );
   m_InverseExponentiator->GetOutput()->SetRequestedRegion( this->GetVelocityField()->GetRequestedRegion() );
-  m_InverseExponentiator->Update();
+
+  try
+  {
+      m_InverseExponentiator->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }  
+
   return m_InverseExponentiator->GetOutput();
 }
 

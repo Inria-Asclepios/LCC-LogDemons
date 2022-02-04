@@ -254,7 +254,16 @@ int main( int argc, char ** argv )
   DividerType::Pointer Divider=DividerType::New();
   Divider->SetInput(Out1);
   Divider->SetConstant(divider );
-  Divider->Update();
+
+  try
+  {
+      Divider->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
 
   /**
@@ -312,19 +321,45 @@ int main( int argc, char ** argv )
   derivative1->SetInput(componentExtractor1->GetOutput());
   derivative2->SetInput(componentExtractor2->GetOutput());
 
-  derivative0->Update();
-  derivative1->Update();
-  derivative2->Update();
+  try
+  {
+      derivative0->Update();
+      derivative1->Update();
+      derivative2->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   
   AddImgFilterType::Pointer addFilter = AddImgFilterType::New();
   addFilter->SetInput1( derivative0->GetOutput() );
   addFilter->SetInput2( derivative1->GetOutput() );
-  addFilter->Update();
+
+  try
+  {
+      addFilter->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
   AddImgFilterType::Pointer addFilter1 = AddImgFilterType::New();
   addFilter1->SetInput1( derivative2->GetOutput() );
   addFilter1->SetInput2(addFilter->GetOutput());
-  addFilter1->Update();
+
+  try
+  {
+      addFilter1->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
   ImageType::Pointer Image=addFilter1->GetOutput();
 
@@ -348,7 +383,16 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
 
 
   ExpImage->SetInput(Image);
-  ExpImage->Update();
+
+  try
+  {
+      ExpImage->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
   typedef itk::WarpImageFilter<ImageType,ImageType,VectorImageType> WarpImgType;
   WarpImgType::Pointer WarpImg=WarpImgType::New();
@@ -365,7 +409,7 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
       /**
         * Iterative step Forward Euler: compute numiter times logJac(exp(vi))=logJac(exp(vi-1))|exp(v0)+logJac(exp(vi-1)) 
        **/
-      for( int i=0; i<numiter; i++ )
+      for( unsigned int i=0; i<numiter; i++ )
         {
          WarpImg->SetInput(Image);
          VectorWarper->SetInput(Vect1);
@@ -387,27 +431,53 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
           Add->SetInput1(WarpImg->GetOutput());
  
 	  if (i==0)
-	    {
-	     Add->SetInput2(Image);
-	     VectorWarper->SetDisplacementField(Vect1);
-	    }
-          else
-	    {
-	     Add->SetInput2(Add->GetOutput());
-	     VectorWarper->SetDisplacementField(VectorAdder->GetOutput());
-            }
-	  
-	  Add->Update();
-          VectorWarper->GetOutput()->SetRequestedRegion(Vect1->GetRequestedRegion());
-          VectorWarper->Update();
-          WarpedIm = VectorWarper->GetOutput();
-          WarpedIm->DisconnectPipeline();
-           
-          VectorAdder->SetInput1(Vect1);
+	  {
+	      Add->SetInput2(Image);
+	      VectorWarper->SetDisplacementField(Vect1);
+	  }
+    else
+	  {
+	      Add->SetInput2(Add->GetOutput());
+	      VectorWarper->SetDisplacementField(VectorAdder->GetOutput());
+    }
+
+    try
+    {    
+        Add->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
+
+    VectorWarper->GetOutput()->SetRequestedRegion(Vect1->GetRequestedRegion());
+
+    try
+    {
+        VectorWarper->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
+    WarpedIm = VectorWarper->GetOutput();
+    WarpedIm->DisconnectPipeline();
+      
+    VectorAdder->SetInput1(Vect1);
 	  VectorAdder->SetInput2(WarpedIm);
 	  VectorAdder->GetOutput()->SetRequestedRegion(Vect1->GetRequestedRegion() );
-	  VectorAdder->Update(); 
 
+    try
+    {
+	      VectorAdder->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
 	}
       }
    else
@@ -415,39 +485,91 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
   /**
     *     Iterative step Scaling and Squaring: compute numiter times logJac(exp(vi))=log[det(Jac(exp(vi-1)))|exp(vi-1)]+log[det(Jac(exp(vi-1)))] 
    **/
-      for( int i=0; i<numiter; i++ )
+      for( unsigned int i=0; i<numiter; i++ )
 	{
-         WarpImg->SetInput(ExpImage->GetOutput());
-         WarpImg->SetDisplacementField(Vect1);
-         WarpImg->Update();
+          WarpImg->SetInput(ExpImage->GetOutput());
+          WarpImg->SetDisplacementField(Vect1);
+          try
+          {
+              WarpImg->Update();
+          }
+          catch (itk::ExceptionObject & err)
+          {
+              std::cerr << "ExceptionObject caught !" << std::endl;
+              std::cerr << err << std::endl;
+          }
 
-         LogImage->SetInput(WarpImg->GetOutput());
-         LogImage->Update();
+          LogImage->SetInput(WarpImg->GetOutput());
 
-         Add->SetInput1(LogImage->GetOutput());
-         Add->SetInput2(Image);
-         Add->Update();
+          try
+          {
+              LogImage->Update();
+          }
+          catch (itk::ExceptionObject & err)
+          {
+              std::cerr << "ExceptionObject caught !" << std::endl;
+              std::cerr << err << std::endl;
+          }
 
-         VectorWarper->SetInput(Vect1); 
-         VectorWarper->SetDisplacementField(Vect1); 
-         VectorWarper->GetOutput()->SetRequestedRegion(Vect1->GetRequestedRegion());
-         VectorWarper->Update();
+          Add->SetInput1(LogImage->GetOutput());
+          Add->SetInput2(Image);
+
+          try
+          {
+              Add->Update();
+          }
+          catch (itk::ExceptionObject & err)
+          {
+              std::cerr << "ExceptionObject caught !" << std::endl;
+              std::cerr << err << std::endl;
+          }
+
+          VectorWarper->SetInput(Vect1); 
+          VectorWarper->SetDisplacementField(Vect1); 
+          VectorWarper->GetOutput()->SetRequestedRegion(Vect1->GetRequestedRegion());
+
+          try
+          {
+              VectorWarper->Update();
+          }
+          catch (itk::ExceptionObject & err)
+          {
+              std::cerr << "ExceptionObject caught !" << std::endl;
+              std::cerr << err << std::endl;
+          }
    
-         WarpedIm= VectorWarper->GetOutput(); 
-         WarpedIm->DisconnectPipeline();
+          WarpedIm= VectorWarper->GetOutput(); 
+          WarpedIm->DisconnectPipeline();
 
-         VectorAdder->SetInput1(Vect1);
-         VectorAdder->SetInput2(WarpedIm);
-         VectorAdder->GetOutput()->SetRequestedRegion(Vect1->GetRequestedRegion());
-         VectorAdder->Update();
-     
+          VectorAdder->SetInput1(Vect1);
+          VectorAdder->SetInput2(WarpedIm);
+          VectorAdder->GetOutput()->SetRequestedRegion(Vect1->GetRequestedRegion());
 
-         Vect1=VectorAdder->GetOutput();
-         Vect1->DisconnectPipeline();
-         Image=Add->GetOutput();
-         Image->DisconnectPipeline();
-         ExpImage->SetInput(Add->GetOutput());
-         ExpImage->Update();
+          try
+          {
+              VectorAdder->Update();
+          }
+          catch (itk::ExceptionObject & err)
+          {
+              std::cerr << "ExceptionObject caught !" << std::endl;
+              std::cerr << err << std::endl;
+          }
+
+          Vect1=VectorAdder->GetOutput();
+          Vect1->DisconnectPipeline();
+          Image=Add->GetOutput();
+          Image->DisconnectPipeline();
+          ExpImage->SetInput(Add->GetOutput());
+
+          try
+          {
+              ExpImage->Update();
+          }
+          catch (itk::ExceptionObject & err)
+          {
+              std::cerr << "ExceptionObject caught !" << std::endl;
+              std::cerr << err << std::endl;
+          }
         }
       }
 
@@ -456,7 +578,16 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
 
   WriterImg->SetInput(Add->GetOutput());
   WriterImg->SetFileName(param.OutputImage);
-  WriterImg->Update();
+
+  try
+  {
+      WriterImg->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
 
   return EXIT_SUCCESS;

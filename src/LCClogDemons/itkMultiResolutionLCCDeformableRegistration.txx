@@ -84,13 +84,8 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetMovingImage(
   const MovingImageType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
-  this->ProcessObject::SetNthInput( 2, const_cast< MovingImageType * >( ptr ) );
-#else
   this->ProcessObject::SetNthInput( 2, const_cast<MovingImageType *>( ptr ) );
-#endif
 }
-
 
 // Get the moving image image.
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
@@ -99,12 +94,7 @@ const typename MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage
 MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealType>
 ::GetMovingImage(void) const
 {
-  return dynamic_cast< const MovingImageType * >
-#if (ITK_VERSION_MAJOR < 4)
-  ( this->ProcessObject::GetInput( 2 ) );
-#else
-  ( this->ProcessObject::GetInput( 2 ) );
-#endif
+    return dynamic_cast< const MovingImageType * >(this->ProcessObject::GetInput(2));
 }
 
 // Set the mask image.
@@ -140,7 +130,6 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 
 
 //Set Boundary Checking
-
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
 void
 MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealType>
@@ -158,13 +147,8 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetFixedImage(
   const FixedImageType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
-  this->ProcessObject::SetNthInput( 1, const_cast< FixedImageType * >( ptr ) );
-#else
-  this->ProcessObject::SetNthInput( 1, const_cast<FixedImageType *>( ptr ) );
-#endif
+    this->ProcessObject::SetNthInput( 1, const_cast<FixedImageType *>( ptr ) );
 }
-
 
 // Get the fixed image.
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
@@ -173,14 +157,8 @@ const typename MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage
 MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealType>
 ::GetFixedImage(void) const
 {
-  return dynamic_cast< const FixedImageType * >
-#if (ITK_VERSION_MAJOR < 4)
-    ( this->ProcessObject::GetInput( 1 ) );
-#else
-    ( this->ProcessObject::GetInput( 1 ) );
-#endif
+  return dynamic_cast< const FixedImageType * >(this->ProcessObject::GetInput(1));
 }
-
 
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
 std::vector<SmartPointer<DataObject> >::size_type
@@ -281,8 +259,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsWorldUnit( tmp );
 }
 
@@ -325,8 +305,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -369,8 +351,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetUpdateFieldStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsWorldUnit( tmp );
 }
 
@@ -413,8 +397,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetUpdateFieldStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -456,8 +442,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetSimilarityCriteriaStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetSimilarityCriteriaStandardDeviationsWorldUnit( tmp );
 }
 
@@ -498,8 +486,10 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 ::SetSimilarityCriteriaStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetSimilarityCriteriaStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -677,17 +667,23 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
             smoother->SetInput( tempField );
             smoother->SetSigma( sigma );
             smoother->SetDirection( dim );
-
-            smoother->Update();
+     
+            try
+            {
+                smoother->Update();
+            }
+            catch (itk::ExceptionObject & err)
+            {
+                std::cerr << "ExceptionObject caught !" << std::endl;
+                std::cerr << err << std::endl;
+            }
 
             tempField = smoother->GetOutput();
             tempField->DisconnectPipeline();
         }
 
-
         // Now resample
         m_FieldExpander->SetInput( tempField );
-	//std::cout<<"Fixed Level "<<fixedLevel<<std::endl;
         typename FloatImageType::Pointer fi = m_FixedImagePyramid->GetOutput( fixedLevel );
         m_FieldExpander->SetSize(             fi->GetLargestPossibleRegion().GetSize() );
         m_FieldExpander->SetOutputStartIndex( fi->GetLargestPossibleRegion().GetIndex() );
@@ -701,21 +697,33 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
     }
 
     if (m_UseMask)
-      {
-       m_ImageExpander->SetInput( m_MaskImage );
-       m_ImageExpander->SetShrinkFactors(pow(2.0,(int)(m_MovingImagePyramid->GetNumberOfLevels()-movingLevel-1)));
-       m_ImageExpander->Update();
-       m_RegistrationFilter->UseMask(m_UseMask);
-       m_RegistrationFilter->SetMaskImage(m_ImageExpander->GetOutput() );
-      }
-    else m_RegistrationFilter->UseMask(m_UseMask);
+    {
+        m_ImageExpander->SetInput( m_MaskImage );
+        m_ImageExpander->SetShrinkFactors(pow(2.0,(int)(m_MovingImagePyramid->GetNumberOfLevels()-movingLevel-1)));
+    
+        try
+        {
+            m_ImageExpander->Update();
+        }
+        catch (itk::ExceptionObject & err)
+        {
+            std::cerr << "ExceptionObject caught !" << std::endl;
+            std::cerr << err << std::endl;
+        }
+        m_RegistrationFilter->UseMask(m_UseMask);
+        m_RegistrationFilter->SetMaskImage(m_ImageExpander->GetOutput() );
+    }
+    else
+    {
+        m_RegistrationFilter->UseMask(m_UseMask);
+    }
 
     bool lastShrinkFactorsAllOnes = false;
 
     m_RegistrationFilter->SetRegularizationType(this->m_RegularizationType);
 
     if (m_RegularizationType==0)
-      {
+    {
         // Mode for smoothing or not the velocity field
         if ( this->m_SmoothVelocityField )
            m_RegistrationFilter->SmoothVelocityFieldOn();
@@ -735,28 +743,24 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
         // Sets the filter standard deviation for update field regularization (voxel unit only)
         if ( !m_StandardDeviationWorldUnit )
            m_RegistrationFilter->SetUpdateFieldStandardDeviationsVoxelUnit( m_UpdateFieldStandardDeviations );
-       }
-
+    }
     else if (m_RegularizationType==1)
-       {
+    {
         // Set penalization for the harmonic energy term
         m_RegistrationFilter->SetHarmonicWeight(this->m_HarmonicWeight);
 
         // Set penalization for the bending energy term
         m_RegistrationFilter->SetBendingWeight(this->m_BendingWeight);
-       }
+    }
 
-        // Sets the filter standard deviation for the similarity criterion (voxel unit only)
+    // Sets the filter standard deviation for the similarity criterion (voxel unit only)
     m_RegistrationFilter->SetSimilarityCriteriaStandardDeviationsVoxelUnit( m_SimilarityCriteriaStandardDeviations );
-
-
     m_RegistrationFilter->SetSigmaI( this->m_SigmaI );
-
     m_RegistrationFilter->SetBoundaryCheck(this->m_BoundaryCheck);
+
     // Loop
     while ( !this->Halt() )
     {
-
         if( tempField.IsNull() )
         {
             m_RegistrationFilter->SetInitialVelocityField( NULL );
@@ -772,26 +776,16 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
             m_FieldExpander->SetOutputOrigin(     fi->GetOrigin() );
             m_FieldExpander->SetOutputSpacing(    fi->GetSpacing());
             m_FieldExpander->SetOutputDirection(  fi->GetDirection());
-
             m_FieldExpander->UpdateLargestPossibleRegion();
             tempField = m_FieldExpander->GetOutput();
             tempField->DisconnectPipeline();
 
-	    
             m_RegistrationFilter->SetInitialVelocityField( tempField );
 
             // Resample the mask image to be the same size as the fixed image at the current level
             if (m_UseMask)
-
             {
               m_ImageExpander->SetInput( m_MaskImage );
-
-    /*        m_ImageExpander->SetSize(             fi->GetLargestPossibleRegion().GetSize() );
-              m_ImageExpander->SetOutputStartIndex( fi->GetLargestPossibleRegion().GetIndex() );
-              m_ImageExpander->SetOutputOrigin(     fi->GetOrigin() );
-              m_ImageExpander->SetOutputSpacing(    fi->GetSpacing());
-              m_ImageExpander->SetOutputDirection(  fi->GetDirection());
-*/
               m_ImageExpander->SetShrinkFactors(pow(2.0,(int)(m_MovingImagePyramid->GetNumberOfLevels()-movingLevel-1)));
               m_ImageExpander->UpdateLargestPossibleRegion();
            
@@ -803,51 +797,51 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 
         }
 
-
         // Setup registration filter and pyramids
         m_RegistrationFilter->SetMovingImage(        m_MovingImagePyramid->GetOutput(movingLevel) );
         m_RegistrationFilter->SetFixedImage(         m_FixedImagePyramid->GetOutput(fixedLevel) );
         m_RegistrationFilter->SetNumberOfIterations( m_NumberOfIterations[m_CurrentLevel] );
 
-
         // Resolution
         double resolution = 1;
-        for (int i=0; i<ImageDimension; i++)
+        for (unsigned int i=0; i<ImageDimension; i++)
         {
             double s1  = fixedImage->GetLargestPossibleRegion().GetSize()[i];
             double s2  = m_FixedImagePyramid->GetOutput(movingLevel)->GetLargestPossibleRegion().GetSize()[i];
             resolution = std::max( resolution, s1/s2 );
         }
 
-
         // Sets the filter standard deviation for global field regularization (world unit only)
         if ( m_StandardDeviationWorldUnit )
         {
             double sd[ImageDimension];
-            for (int i=0; i<ImageDimension; i++)
-              sd[i] = m_StandardDeviations[i];
+            for (unsigned int i=0; i<ImageDimension; i++)
+            {
+                sd[i] = m_StandardDeviations[i];
+            }
 
             m_RegistrationFilter->SetStandardDeviationsWorldUnit( sd );
         }
-
 
         // Sets the filter standard deviation for update field regularization (world unit only)
         if ( m_StandardDeviationWorldUnit )
         {
             double sd[ImageDimension];
-            for (int i=0; i<ImageDimension; i++)
+            for (unsigned int i=0; i<ImageDimension; i++)
+            {
               sd[i] = m_UpdateFieldStandardDeviations[i];
-
+            }
             m_RegistrationFilter->SetUpdateFieldStandardDeviationsWorldUnit( sd );
         }
 
-     // Sets the filter standard deviation for the similarity criterion (world unit only)
+        // Sets the filter standard deviation for the similarity criterion (world unit only)
         if ( m_StandardDeviationWorldUnit )
         {
             double sd[ImageDimension];
-            for (int i=0; i<ImageDimension; i++)
+            for (unsigned int i=0; i<ImageDimension; i++)
+            {
                 sd[i] = m_SimilarityCriteriaStandardDeviations[i] * resolution;
-
+            }
             m_RegistrationFilter->SetSimilarityCriteriaStandardDeviationsWorldUnit( sd );
         }
 
@@ -864,18 +858,13 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 
         // compute new velocity field
         m_RegistrationFilter->UpdateLargestPossibleRegion();
-       // std::cout<<"Smoothing velocity!"<<std::endl;
-       // m_RegistrationFilter->SmoothVelocityField();
 
         //Workaround for keep multithreading while regularing in Fourier domain
         tempField = m_RegistrationFilter->GetOutput();
-
         tempField->DisconnectPipeline();
 
-	
-	
-        // Increment level counter.
-        m_CurrentLevel++;
+        // // Increment level counter.
+         m_CurrentLevel++;
         movingLevel = std::min( (int) m_CurrentLevel,
                                     (int) m_MovingImagePyramid->GetNumberOfLevels() );
         fixedLevel = std::min( (int) m_CurrentLevel,
@@ -889,6 +878,7 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
         {
             m_MovingImagePyramid->GetOutput( movingLevel - 1 )->ReleaseData();
         }
+
         if( fixedLevel > 0 )
         {
             m_FixedImagePyramid->GetOutput( fixedLevel - 1 )->ReleaseData();
@@ -948,7 +938,6 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
     m_FieldExpander->GetOutput()->ReleaseData();
     m_RegistrationFilter->SetInput( NULL );
     m_RegistrationFilter->GetOutput()->ReleaseData();
-
 }
 
 
@@ -966,26 +955,18 @@ bool
 MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealType>
 ::Halt()
 {
-  // Halt the registration after the user-specified number of levels
-  if (m_NumberOfLevels != 0)
+    // Halt the registration after the user-specified number of levels
+    if (m_NumberOfLevels != 0)
     {
-    this->UpdateProgress( static_cast<float>( m_CurrentLevel ) /
-                          static_cast<float>( m_NumberOfLevels ) );
+        this->UpdateProgress( static_cast<float>( m_CurrentLevel ) /
+                              static_cast<float>( m_NumberOfLevels ) );
     }
 
-  if ( m_CurrentLevel >= m_NumberOfLevels )
+    if ( (m_CurrentLevel >= m_NumberOfLevels) || m_StopRegistrationFlag )
     {
-    return true;
+        return true;
     }
-  if ( m_StopRegistrationFlag )
-    {
-    return true;
-    }
-  else
-    { 
     return false; 
-    }
-
 }
 
 
@@ -997,11 +978,7 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
 
   typename DataObject::Pointer output;
 
-#if (ITK_VERSION_MAJOR < 4)
   if( this->GetInput(0) )
-#else
-  if( this->GetInput(0) )
-#endif
     {
     // Initial velocity field is set.
     // Copy information from initial field.
@@ -1032,7 +1009,6 @@ void
 MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealType>
 ::GenerateInputRequestedRegion()
 {
-
   // call the superclass's implementation
   Superclass::GenerateInputRequestedRegion();
 
@@ -1065,7 +1041,6 @@ MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealTy
     {
     fixedPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
     }
-
 }
 
 
@@ -1096,10 +1071,18 @@ typename MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TFiel
 MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealType>
 ::GetDeformationField()
 {
-  //std::cout<<"MultiResolutionLCCDeformableRegistration::GetDeformationField"<<std::endl;
   m_Exponentiator->SetInput( this->GetVelocityField() );
   m_Exponentiator->ComputeInverseOff();
-  m_Exponentiator->Update();
+  
+  try
+  {
+    m_Exponentiator->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+    std::cerr << "ExceptionObject caught !" << std::endl;
+    std::cerr << err << std::endl;
+  }
   DeformationFieldPointer field = m_Exponentiator->GetOutput();
   field->DisconnectPipeline();
   return field;
@@ -1112,10 +1095,18 @@ typename MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TFiel
 MultiResolutionLCCDeformableRegistration<TFixedImage,TMovingImage,TField,TRealType>
 ::GetInverseDeformationField()
 {
-  //std::cout<<"MultiResolutionLCCDeformableRegistration::GetInverseDeformationField"<<std::endl;
   m_Exponentiator->SetInput( this->GetVelocityField() );
   m_Exponentiator->ComputeInverseOn();
-  m_Exponentiator->Update();
+  
+  try
+  {
+      m_Exponentiator->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   DeformationFieldPointer field = m_Exponentiator->GetOutput();
   field->DisconnectPipeline();
   // Reset compute inverse back to off to avoid some broder effects

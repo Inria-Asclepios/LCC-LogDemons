@@ -92,11 +92,7 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField
 ::SetMovingImage(
   const MovingImageType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
   this->ProcessObject::SetNthInput( MOVING_IMAGE_CODE, const_cast<MovingImageType *>( ptr ) );
-#else
-  this->ProcessObject::SetNthInput( MOVING_IMAGE_CODE, const_cast<MovingImageType *>( ptr ) );
-#endif
 }
 
 // Get the moving image image.
@@ -105,14 +101,9 @@ const typename MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovi
 ::MovingImageType
 * MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField, TRealType>
 ::GetMovingImage(void) const
-  {
-  return dynamic_cast<const MovingImageType *>
-#if (ITK_VERSION_MAJOR < 4)
-         ( this->ProcessObject::GetInput( MOVING_IMAGE_CODE ) );
-#else
-         ( this->ProcessObject::GetInput( MOVING_IMAGE_CODE ) );
-#endif
-  }
+{
+    return dynamic_cast<const MovingImageType *>(this->ProcessObject::GetInput( MOVING_IMAGE_CODE ));
+}
 
 // Set the fixed image.
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
@@ -121,11 +112,7 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField
 ::SetFixedImage(
   const FixedImageType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
-  this->ProcessObject::SetNthInput( FIXED_IMAGE_CODE, const_cast<FixedImageType *>( ptr ) );
-#else
-  this->ProcessObject::SetNthInput( FIXED_IMAGE_CODE, const_cast<FixedImageType *>( ptr ) );
-#endif
+    this->ProcessObject::SetNthInput( FIXED_IMAGE_CODE, const_cast<FixedImageType *>( ptr ) );
 }
 
 // Get the fixed image.
@@ -134,14 +121,9 @@ const typename MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovi
 ::FixedImageType
 * MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField, TRealType>
 ::GetFixedImage(void) const
-  {
-  return dynamic_cast<const FixedImageType *>
-#if (ITK_VERSION_MAJOR < 4)
-         ( this->ProcessObject::GetInput( FIXED_IMAGE_CODE ) );
-#else
-         ( this->ProcessObject::GetInput( FIXED_IMAGE_CODE ) );
-#endif
-  }
+{
+    return dynamic_cast<const FixedImageType *>(this->ProcessObject::GetInput( FIXED_IMAGE_CODE ));
+}
 
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
 std::vector<SmartPointer<DataObject> >::size_type
@@ -239,8 +221,10 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage,TMovingImage,TField,T
 ::SetStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsWorldUnit( tmp );
 }
 
@@ -283,8 +267,10 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage,TMovingImage,TField,T
 ::SetStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -327,8 +313,10 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage,TMovingImage,TField,T
 ::SetUpdateFieldStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsWorldUnit( tmp );
 }
 
@@ -371,8 +359,10 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage,TMovingImage,TField,T
 ::SetUpdateFieldStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -482,17 +472,13 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField
     itkExceptionMacro( << "Registration filter not set" );
     }
 
-#if (ITK_VERSION_MAJOR < 4)
   if( this->m_InitialVelocityField && this->GetInput(VELOCITYFIELD_IMAGE_CODE) )
-#else
-  if( this->m_InitialVelocityField && this->GetInput(VELOCITYFIELD_IMAGE_CODE) )
-#endif
-    {
+  {
     itkExceptionMacro( << "Only one initial velocity can be given. "
                        << "SetInitialVelocityField should not be used in "
-                       << "cunjunction with SetArbitraryInitialVelocityField "
+                       << "conjunction with SetArbitraryInitialVelocityField "
                        << "or SetInput.");
-    }
+  }
 
   // Create the image pyramids.
   m_MovingImagePyramid->SetInput( movingImage );
@@ -512,13 +498,8 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField
                                           (int) m_FixedImagePyramid->GetNumberOfLevels() );
 
   VelocityFieldPointer tempField = nullptr;
+  VelocityFieldPointer inputPtr = const_cast<VelocityFieldType *>( this->GetInput(VELOCITYFIELD_IMAGE_CODE) );
 
-  VelocityFieldPointer inputPtr =
-#if (ITK_VERSION_MAJOR < 4)
-    const_cast<VelocityFieldType *>( this->GetInput(VELOCITYFIELD_IMAGE_CODE) );
-#else
-    const_cast<VelocityFieldType *>( this->GetInput(VELOCITYFIELD_IMAGE_CODE) );
-#endif
   if( this->m_InitialVelocityField )
     {
     tempField = this->m_InitialVelocityField;
@@ -549,7 +530,15 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField
       smoother->SetSigma( sigma );
       smoother->SetDirection( dim );
 
-      smoother->Update();
+      try
+      {
+          smoother->Update();
+      }
+      catch (itk::ExceptionObject & err)
+      {
+          std::cerr << "ExceptionObject caught !" << std::endl;
+          std::cerr << err << std::endl;
+      }
 
       tempField = smoother->GetOutput();
       tempField->DisconnectPipeline();
@@ -653,7 +642,7 @@ else if (m_RegularizationType==1)
 
     // Resolution
     double resolution = 1;
-    for (int i=0; i<ImageDimension; i++)
+    for (unsigned int i=0; i<ImageDimension; i++)
     {
         double s1  = fixedImage->GetLargestPossibleRegion().GetSize()[i];
         double s2  = m_FixedImagePyramid->GetOutput(movingLevel)->GetLargestPossibleRegion().GetSize()[i];
@@ -665,19 +654,20 @@ else if (m_RegularizationType==1)
     if ( m_StandardDeviationWorldUnit )
     {
         double sd[ImageDimension];
-        for (int i=0; i<ImageDimension; i++)
+        for (unsigned int i=0; i<ImageDimension; i++)
+        {
             sd[i] = m_StandardDeviations[i] * resolution;
+        }
         m_RegistrationFilter->SetStandardDeviationsWorldUnit( sd );
 
     // Sets the filter standard deviation for update field regularization (world unit only)
 
-        for (int i=0; i<ImageDimension; i++)
+        for (unsigned int i=0; i<ImageDimension; i++)
+        {
             sd[i] = m_UpdateFieldStandardDeviations[i] * resolution;
+        }
         m_RegistrationFilter->SetUpdateFieldStandardDeviationsWorldUnit( sd );
     }
-
-
-
 
     // cache shrink factors for computing the next expand factors.
     lastShrinkFactorsAllOnes = true;
@@ -768,24 +758,20 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField
 {
   // Halt the registration after the user-specified number of levels
   if( m_NumberOfLevels != 0 )
-    {
+  {
     this->UpdateProgress( static_cast<float>( m_CurrentLevel )
                           / static_cast<float>( m_NumberOfLevels ) );
-    }
+  }
 
   if( m_CurrentLevel >= m_NumberOfLevels )
-    {
+  {
     return true;
-    }
+  }
   if( m_StopRegistrationFlag )
-    {
+  {
     return true;
-    }
-  else
-    {
-    return false;
-    }
-
+  }
+  return false;
 }
 
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
@@ -796,33 +782,25 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField
 
   typename DataObject::Pointer output;
 
-#if (ITK_VERSION_MAJOR < 4)
   if( this->GetInput(VELOCITYFIELD_IMAGE_CODE) )
-#else
-  if( this->GetInput(VELOCITYFIELD_IMAGE_CODE) )
-#endif
-    {
-    // Initial velocity field is set.
-    // Copy information from initial field.
-    this->Superclass::GenerateOutputInformation();
-
-    }
+  {
+      // Initial velocity field is set.
+      // Copy information from initial field.
+      this->Superclass::GenerateOutputInformation();
+  }
   else if( this->GetFixedImage() )
-    {
+  {
     // Initial deforamtion field is not set.
     // Copy information from the fixed image.
-    for( unsigned int idx = 0; idx <
-         this->GetNumberOfOutputs(); ++idx )
-      {
+    for( unsigned int idx = 0; idx < this->GetNumberOfOutputs(); ++idx )
+    {
       output = this->GetOutput(idx);
       if( output )
-        {
+      {
         output->CopyInformation(this->GetFixedImage() );
-        }
       }
-
     }
-
+  }
 }
 
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
@@ -830,40 +808,31 @@ void
 MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField, TRealType>
 ::GenerateInputRequestedRegion()
 {
-
   // call the superclass's implementation
   Superclass::GenerateInputRequestedRegion();
 
   // request the largest possible region for the moving image
-  MovingImagePointer movingPtr =
-    const_cast<MovingImageType *>( this->GetMovingImage() );
+  MovingImagePointer movingPtr = const_cast<MovingImageType *>( this->GetMovingImage() );
   if( movingPtr )
-    {
+  {
     movingPtr->SetRequestedRegionToLargestPossibleRegion();
-    }
+  }
 
   // just propagate up the output requested region for
   // the fixed image and initial velocity field.
-  VelocityFieldPointer inputPtr =
-#if (ITK_VERSION_MAJOR < 4)
-    const_cast<VelocityFieldType *>( this->GetInput(VELOCITYFIELD_IMAGE_CODE) );
-#else
-    const_cast<VelocityFieldType *>( this->GetInput(VELOCITYFIELD_IMAGE_CODE) );
-#endif
+  VelocityFieldPointer inputPtr  = const_cast<VelocityFieldType *>(this->GetInput(VELOCITYFIELD_IMAGE_CODE));
   VelocityFieldPointer outputPtr = this->GetOutput();
-  FixedImagePointer    fixedPtr =
-    const_cast<FixedImageType *>( this->GetFixedImage() );
+  FixedImagePointer    fixedPtr  = const_cast<FixedImageType *>( this->GetFixedImage() );
 
   if( inputPtr )
-    {
+  {
     inputPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
-    }
+  }
 
   if( fixedPtr )
-    {
+  {
     fixedPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
-    }
-
+  }
 }
 
 template <class TFixedImage, class TMovingImage, class TField, class TRealType>
@@ -892,10 +861,18 @@ typename MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImag
 MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField, TRealType>
 ::GetDeformationField()
 {
-  // std::cout<<"MultiResolutionLogDomainDeformableRegistration::GetDeformationField"<<std::endl;
   m_Exponentiator->SetInput( this->GetVelocityField() );
   m_Exponentiator->ComputeInverseOff();
-  m_Exponentiator->Update();
+
+  try
+  {
+      m_Exponentiator->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   DeformationFieldPointer field = m_Exponentiator->GetOutput();
   field->DisconnectPipeline();
   return field;
@@ -907,10 +884,18 @@ typename MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImag
 MultiResolutionLogDomainDeformableRegistration<TFixedImage, TMovingImage, TField, TRealType>
 ::GetInverseDisplacementField()
 {
-  // std::cout<<"MultiResolutionLogDomainDeformableRegistration::GetInverseDisplacementField"<<std::endl;
   m_Exponentiator->SetInput( this->GetVelocityField() );
   m_Exponentiator->ComputeInverseOn();
-  m_Exponentiator->Update();
+
+  try
+  {
+      m_Exponentiator->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   DeformationFieldPointer field = m_Exponentiator->GetOutput();
   field->DisconnectPipeline();
   // Reset compute inverse back to off to avoid some broder effects

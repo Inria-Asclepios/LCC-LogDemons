@@ -69,7 +69,16 @@ ExponentialDeformationFieldImageFilter<TInputImage,TOutputImage>
 
   m_Multiplier->SetInput(this->GetInput());
   m_Multiplier->SetConstant(m_MultiplicativeFactor);
-  m_Multiplier->Update();
+
+  try
+  {
+      m_Multiplier->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
   InputImageConstPointer inputPtr = m_Multiplier->GetOutput();
 
@@ -128,33 +137,52 @@ ExponentialDeformationFieldImageFilter<TInputImage,TOutputImage>
     numiter = m_MaximumNumberOfIterations;
     }
 
-
   ProgressReporter progress(this, 0, numiter+1, numiter+1);
 
   if( numiter == 0 )
-    {
+  {
     if ( !this->m_ComputeInverse )
-      {
-      m_Caster->SetInput(inputPtr);
-      m_Caster->GraftOutput(this->GetOutput());
-      m_Caster->Update();
-      // Region passing stuff
-      this->GraftOutput( m_Caster->GetOutput() );
-      }
+    {
+        m_Caster->SetInput(inputPtr);
+        m_Caster->GraftOutput(this->GetOutput());
+
+        try
+        {
+            m_Caster->Update();
+        }
+        catch (itk::ExceptionObject & err)
+        {
+            std::cerr << "ExceptionObject caught !" << std::endl;
+            std::cerr << err << std::endl;
+        }
+
+        // Region passing stuff
+        this->GraftOutput( m_Caster->GetOutput() );
+    }
     else
-      {
-      m_Oppositer->SetInput(inputPtr);
-      m_Oppositer->GraftOutput(this->GetOutput());
-      m_Oppositer->Update();
-      // Region passing stuff
-      this->GraftOutput( m_Oppositer->GetOutput() );
-      }
+    {
+        m_Oppositer->SetInput(inputPtr);
+        m_Oppositer->GraftOutput(this->GetOutput());
+
+        try
+        {
+            m_Oppositer->Update();
+        }
+        catch (itk::ExceptionObject & err)
+        {
+            std::cerr << "ExceptionObject caught !" << std::endl;
+            std::cerr << err << std::endl;
+        }
+
+        // Region passing stuff
+        this->GraftOutput( m_Oppositer->GetOutput() );
+
+    }
 
     this->GetOutput()->Modified();
-
     progress.CompletedPixel();
     return;
-    }
+  }
 
   // Get the first order approximation (division by 2^numiter)
   m_Divider->SetInput(inputPtr);
@@ -168,20 +196,25 @@ ExponentialDeformationFieldImageFilter<TInputImage,TOutputImage>
        m_Divider->SetConstant( -static_cast<InputPixelRealValueType>(1<<numiter) );
     }
 
-  m_Divider->Update();
-
+  try
+  {
+      m_Divider->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   // Region passing stuff
   this->GraftOutput( m_Divider->GetOutput() );
   this->GetOutput()->Modified();
 
   progress.CompletedPixel();
 
-
   // Do the iterative composition of the vector field
   m_Warper->SetOutputOrigin(inputPtr->GetOrigin());
   m_Warper->SetOutputSpacing(inputPtr->GetSpacing());
   m_Warper->SetOutputDirection(inputPtr->GetDirection());
-
 
   for( unsigned int i=0; i<numiter; i++ )
     {
@@ -191,7 +224,15 @@ ExponentialDeformationFieldImageFilter<TInputImage,TOutputImage>
     m_Warper->GetOutput()->SetRequestedRegion(
        this->GetOutput()->GetRequestedRegion() );
 
-    m_Warper->Update();
+    try
+    {
+        m_Warper->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
 
     OutputImagePointer warpedIm = m_Warper->GetOutput();
     warpedIm->DisconnectPipeline();
@@ -203,7 +244,15 @@ ExponentialDeformationFieldImageFilter<TInputImage,TOutputImage>
     m_Adder->GetOutput()->SetRequestedRegion(
       this->GetOutput()->GetRequestedRegion() );
 
-    m_Adder->Update();
+    try
+    {
+        m_Adder->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
 
     // Region passing stuff
     this->GraftOutput( m_Adder->GetOutput() );

@@ -64,11 +64,7 @@ void
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::SetInitialVelocityField( VelocityFieldType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
-  this->SetNthInput( VELOCITYFIELD_IMAGE_CODE, ptr );
-#else
-  this->SetNthInput( VELOCITYFIELD_IMAGE_CODE, ptr );
-#endif
+    this->SetNthInput( VELOCITYFIELD_IMAGE_CODE, ptr );
 }
 
 // Set the fixed image.
@@ -78,11 +74,7 @@ LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::SetFixedImage(
   const FixedImageType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
   this->ProcessObject::SetNthInput( FIXED_IMAGE_CODE, const_cast<FixedImageType *>( ptr ) );
-#else
-  this->ProcessObject::SetNthInput( FIXED_IMAGE_CODE, const_cast<FixedImageType *>( ptr ) );
-#endif
 }
 
 // Get the fixed image.
@@ -91,14 +83,9 @@ const typename LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, 
 ::FixedImageType *
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::GetFixedImage() const
-  {
-  return dynamic_cast<const FixedImageType *>
-#if (ITK_VERSION_MAJOR < 4)
-         ( this->ProcessObject::GetInput( FIXED_IMAGE_CODE ) );
-#else
-         ( this->ProcessObject::GetInput( FIXED_IMAGE_CODE ) );
-#endif
-  }
+{
+    return dynamic_cast<const FixedImageType *>(this->ProcessObject::GetInput( FIXED_IMAGE_CODE ));
+}
 
 template <class TFixedImage, class TMovingImage, class TField>
 /*const HACK:  This should be const */
@@ -118,11 +105,7 @@ LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::SetMovingImage(
   const MovingImageType * ptr )
 {
-#if (ITK_VERSION_MAJOR < 4)
-  this->ProcessObject::SetNthInput( MOVING_IMAGE_CODE, const_cast<MovingImageType *>( ptr ) );
-#else
-  this->ProcessObject::SetNthInput( MOVING_IMAGE_CODE, const_cast<MovingImageType *>( ptr ) );
-#endif
+    this->ProcessObject::SetNthInput(MOVING_IMAGE_CODE, const_cast<MovingImageType *>( ptr ));
 }
 
 // Get the moving image.
@@ -131,14 +114,9 @@ const typename LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, 
 ::MovingImageType
 * LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::GetMovingImage() const
-  {
-  return dynamic_cast<const MovingImageType *>
-#if (ITK_VERSION_MAJOR < 4)
-         ( this->ProcessObject::GetInput( MOVING_IMAGE_CODE ) );
-#else
-         ( this->ProcessObject::GetInput( MOVING_IMAGE_CODE ) );
-#endif
-  }
+{
+    return dynamic_cast<const MovingImageType *>(this->ProcessObject::GetInput( MOVING_IMAGE_CODE ));
+}
 
 template <class TFixedImage, class TMovingImage, class TField>
 std::vector<SmartPointer<DataObject> >::size_type
@@ -212,7 +190,6 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviations(
   double value )
 {
-
     std::cout<< "WARNING : Deprecated function" << std::endl;
 
     unsigned int j;
@@ -241,8 +218,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsWorldUnit( tmp );
 }
 
@@ -285,8 +264,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -329,7 +310,6 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviations(
   double value )
 {
-
     std::cout<< "WARNING : Deprecated function" << std::endl;
 
   unsigned int j;
@@ -359,8 +339,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
-        tmp[i] = value;
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
+      tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsWorldUnit( tmp );
 }
 
@@ -403,8 +385,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
-        tmp[i] = value;
+    for( unsigned int i=0; i<ImageDimension; i++ )
+    {
+      tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -482,7 +466,6 @@ void
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::InitializeIteration()
 {
-  // std::cout<<"LogDomainDeformableRegistrationFilter::InitializeIteration"<<std::endl;
   MovingImageConstPointer movingPtr = this->GetMovingImage();
   FixedImageConstPointer  fixedPtr = this->GetFixedImage();
 
@@ -517,34 +500,29 @@ void
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::CopyInputToOutput()
 {
+    typename Superclass::InputImageType::ConstPointer  inputPtr  = this->GetInput(VELOCITYFIELD_IMAGE_CODE);
 
-#if (ITK_VERSION_MAJOR < 4)
-  typename Superclass::InputImageType::ConstPointer  inputPtr  = this->GetInput(VELOCITYFIELD_IMAGE_CODE);
-#else
-  typename Superclass::InputImageType::ConstPointer  inputPtr  = this->GetInput(VELOCITYFIELD_IMAGE_CODE);
-#endif
-
-  if( inputPtr )
+    if( inputPtr )
     {
-    this->Superclass::CopyInputToOutput();
+        this->Superclass::CopyInputToOutput();
     }
-  else
+    else
     {
-    typename Superclass::PixelType zeros;
-    for( unsigned int j = 0; j < ImageDimension; j++ )
-      {
-      zeros[j] = 0;
-      }
+        typename Superclass::PixelType zeros;
+        for( unsigned int j = 0; j < ImageDimension; j++ )
+        {
+          zeros[j] = 0;
+        }
 
-    typename OutputImageType::Pointer output = this->GetVelocityField();
+        typename OutputImageType::Pointer output = this->GetVelocityField();
 
-    ImageRegionIterator<OutputImageType> out(output, output->GetRequestedRegion() );
+        ImageRegionIterator<OutputImageType> out(output, output->GetRequestedRegion() );
 
-    while( !out.IsAtEnd() )
-      {
-      out.Value() =  zeros;
-      ++out;
-      }
+        while( !out.IsAtEnd() )
+        {
+          out.Value() =  zeros;
+          ++out;
+        }
     }
 }
 
@@ -553,36 +531,28 @@ void
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::GenerateOutputInformation()
 {
-  // std::cout<<"LogDomainDeformableRegistrationFilter::GenerateOutputInformation"<<std::endl;
   typename DataObject::Pointer output;
 
-#if (ITK_VERSION_MAJOR < 4)
   if( this->GetInput(VELOCITYFIELD_IMAGE_CODE) )
-#else
-  if( this->GetInput(VELOCITYFIELD_IMAGE_CODE) )
-#endif
-    {
+  {
     // Initial velocity field is set.
     // Copy information from initial field.
     this->Superclass::GenerateOutputInformation();
 
-    }
+  }
   else if( this->GetFixedImage() )
-    {
+  {
     // Initial deforamtion field is not set.
     // Copy information from the fixed image.
-    for( unsigned int idx = 0; idx <
-         this->GetNumberOfOutputs(); ++idx )
-      {
+    for( unsigned int idx = 0; idx < this->GetNumberOfOutputs(); ++idx )
+    {
       output = this->GetOutput(idx);
       if( output )
-        {
+      {
         output->CopyInformation(this->GetFixedImage() );
-        }
       }
-
     }
-
+  }
 }
 
 template <class TFixedImage, class TMovingImage, class TField>
@@ -590,7 +560,6 @@ void
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::GenerateInputRequestedRegion()
 {
-  // std::cout<<"LogDomainDeformableRegistrationFilter::GenerateInputRequestedRegion"<<std::endl;
   // call the superclass's implementation
   Superclass::GenerateInputRequestedRegion();
 
@@ -604,13 +573,7 @@ LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 
   // just propagate up the output requested region for
   // the fixed image and initial velocity field.
-#if (ITK_VERSION_MAJOR < 4)
-  VelocityFieldPointer inputPtr =
-    const_cast<VelocityFieldType *>( this->GetInput(VELOCITYFIELD_IMAGE_CODE) );
-#else
-  VelocityFieldPointer inputPtr =
-    const_cast<VelocityFieldType *>( this->GetInput(VELOCITYFIELD_IMAGE_CODE) );
-#endif
+  VelocityFieldPointer inputPtr = const_cast<VelocityFieldType *>( this->GetInput(VELOCITYFIELD_IMAGE_CODE) );
   VelocityFieldPointer outputPtr = this->GetVelocityField();
   FixedImagePointer    fixedPtr = const_cast<FixedImageType *>( this->GetFixedImage() );
 
@@ -641,7 +604,6 @@ void
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::Initialize()
 {
-  // std::cout<<"LogDomainDeformableRegistrationFilter::Initialize"<<std::endl;
   this->Superclass::Initialize();
   m_StopRegistrationFlag = false;
 }
@@ -652,35 +614,14 @@ void
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::SmoothVelocityField()
 {
-    if (m_RegularizationType == 1)
-      {
-
-
-        float param[2];
-         param[0]=m_HarmonicWeight;
-         param[1]=m_BendingWeight;
-
-       /*  typedef typename itk::VectorRegularizationFilter<VelocityFieldType> RegularizerType;
-         //std::cout<<param[0]<<" "<<param[1]<<std::endl;
-
-         typename RegularizerType::Pointer Regularizer=RegularizerType::New();
-         Regularizer->SetInput(this->GetOutput());
-         Regularizer->SetFactor(param);
-
-         Regularizer->Update();
-
-         this->GraftOutput(Regularizer->GetOutput());
-      */
+    if (m_RegularizationType == 0)
+    {
+        if (this->GetSmoothVelocityField())
+        {
+            // The output buffer will be overwritten with new data.
+            this->SmoothGivenField(this->GetVelocityField(), this->m_StandardDeviations);
         }
-
-    else if (m_RegularizationType == 0)
-      {
-       if (this->GetSmoothVelocityField())
-          {
-           // The output buffer will be overwritten with new data.
-           this->SmoothGivenField(this->GetVelocityField(), this->m_StandardDeviations);
-          }
-      }
+    }
 }
 
 // Smooth update field using a separable Gaussian kernel
@@ -756,7 +697,16 @@ LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
     // todo: make sure we only smooth within the buffered region
     smoother->SetOperator( *oper );
     smoother->SetInput( field );
-    smoother->Update();
+
+    try
+    {
+        smoother->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
 
     if( j < ImageDimension - 1 )
       {
@@ -789,11 +739,19 @@ typename LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::GetDeformationField()
 {
-  // std::cout<<"LogDomainDeformableRegistration::GetDeformationField"<<std::endl;
-  m_Exponentiator->SetInput( this->GetVelocityField() );
-  m_Exponentiator->GetOutput()->SetRequestedRegion( this->GetVelocityField()->GetRequestedRegion() );
-  m_Exponentiator->Update();
-  return m_Exponentiator->GetOutput();
+    m_Exponentiator->SetInput( this->GetVelocityField() );
+    m_Exponentiator->GetOutput()->SetRequestedRegion( this->GetVelocityField()->GetRequestedRegion() );
+    
+    try
+    {
+        m_Exponentiator->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
+    return m_Exponentiator->GetOutput();
 }
 
 template <class TFixedImage, class TMovingImage, class TField>
@@ -802,10 +760,18 @@ typename LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::GetInverseDisplacementField()
 {
-  // std::cout<<"LogDomainDeformableRegistration::GetInverseDisplacementField"<<std::endl;
   m_InverseExponentiator->SetInput( this->GetVelocityField() );
   m_InverseExponentiator->GetOutput()->SetRequestedRegion( this->GetVelocityField()->GetRequestedRegion() );
-  m_InverseExponentiator->Update();
+
+  try
+  {
+      m_InverseExponentiator->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
   return m_InverseExponentiator->GetOutput();
 }
 

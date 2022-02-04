@@ -63,7 +63,6 @@ void
 LogDomainDemonsRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::InitializeIteration()
 {
-  // std::cout<<"LogDomainDemonsRegistrationFilter::InitializeIteration"<<std::endl;
   // update variables in the equation object
   DemonsRegistrationFunctionType * const f = this->DownCastDifferenceFunctionType();
 
@@ -184,7 +183,6 @@ LogDomainDemonsRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::ApplyUpdate(const TimeStepType& dt)
 #endif
 {
-  // std::cout<<"LogDomainDemonsRegistrationFilter::ApplyUpdate"<<std::endl;
   // If we smooth the update buffer before applying it, then the are
   // approximating a viscuous problem as opposed to an elastic problem
   if( this->GetSmoothUpdateField() )
@@ -201,7 +199,16 @@ LogDomainDemonsRegistrationFilter<TFixedImage, TMovingImage, TField>
     m_Multiplier->SetInput( this->GetUpdateBuffer() );
     m_Multiplier->GraftOutput( this->GetUpdateBuffer() );
     // in place update
-    m_Multiplier->Update();
+
+    try
+    {
+        m_Multiplier->Update();
+    }
+    catch (itk::ExceptionObject & err)
+    {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
+    }
     // graft output back to this->GetUpdateBuffer()
     this->GetUpdateBuffer()->Graft( m_Multiplier->GetOutput() );
     }
@@ -221,7 +228,15 @@ LogDomainDemonsRegistrationFilter<TFixedImage, TMovingImage, TField>
   m_BCHFilter->GetOutput()->SetRequestedRegion( this->GetVelocityField()->GetRequestedRegion() );
 
   // Triggers in place update
-  m_BCHFilter->Update();
+  try
+  {
+      m_BCHFilter->Update();
+  }
+  catch (itk::ExceptionObject & err)
+  {
+      std::cerr << "ExceptionObject caught !" << std::endl;
+      std::cerr << err << std::endl;
+  }
 
   // Region passing stuff
   this->GraftOutput( m_BCHFilter->GetOutput() );
