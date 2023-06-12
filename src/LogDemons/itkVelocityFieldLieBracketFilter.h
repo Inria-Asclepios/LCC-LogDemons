@@ -2,7 +2,7 @@
 #define __itkVelocityFieldLieBracketFilter_h
 
 #include <itkImageToImageFilter.h>
-#include <itkVectorCentralDifferenceImageFunction.h>
+#include <itkCentralDifferenceImageFunction.h>
 #include <itkImageRegionConstIteratorWithIndex.h>
 
 namespace itk
@@ -67,7 +67,7 @@ public:
   itkTypeMacro( VelocityFieldLieBracketFilter, ImageToImageFilter );
 
   /** Gradient calculator type. */
-  typedef itk::VectorCentralDifferenceImageFunction<InputFieldType>
+  typedef itk::CentralDifferenceImageFunction<InputFieldType, float, Matrix <double, InputFieldType::PixelType::Dimension, InputFieldType::ImageDimension> >
   InputFieldGradientCalculatorType;
 
   /** Gradient type. */

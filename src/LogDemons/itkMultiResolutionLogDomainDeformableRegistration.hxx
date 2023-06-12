@@ -239,8 +239,10 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage,TMovingImage,TField,T
 ::SetStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsWorldUnit( tmp );
 }
 
@@ -283,8 +285,10 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage,TMovingImage,TField,T
 ::SetStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -327,8 +331,10 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage,TMovingImage,TField,T
 ::SetUpdateFieldStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsWorldUnit( tmp );
 }
 
@@ -371,8 +377,10 @@ MultiResolutionLogDomainDeformableRegistration<TFixedImage,TMovingImage,TField,T
 ::SetUpdateFieldStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -653,7 +661,7 @@ else if (m_RegularizationType==1)
 
     // Resolution
     double resolution = 1;
-    for (int i=0; i<ImageDimension; i++)
+    for (int i=0; i<static_cast<int>(ImageDimension); i++)
     {
         double s1  = fixedImage->GetLargestPossibleRegion().GetSize()[i];
         double s2  = m_FixedImagePyramid->GetOutput(movingLevel)->GetLargestPossibleRegion().GetSize()[i];
@@ -665,14 +673,18 @@ else if (m_RegularizationType==1)
     if ( m_StandardDeviationWorldUnit )
     {
         double sd[ImageDimension];
-        for (int i=0; i<ImageDimension; i++)
+        for (int i=0; i<static_cast<int>(ImageDimension); i++)
+        {
             sd[i] = m_StandardDeviations[i] * resolution;
+        }
         m_RegistrationFilter->SetStandardDeviationsWorldUnit( sd );
 
     // Sets the filter standard deviation for update field regularization (world unit only)
 
-        for (int i=0; i<ImageDimension; i++)
+        for (int i=0; i<static_cast<int>(ImageDimension); i++)
+        {
             sd[i] = m_UpdateFieldStandardDeviations[i] * resolution;
+        }
         m_RegistrationFilter->SetUpdateFieldStandardDeviationsWorldUnit( sd );
     }
 

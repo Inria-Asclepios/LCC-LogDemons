@@ -96,7 +96,7 @@ public:
                                         MovingImageType,
                                         DeformationFieldType>                          DemonsRegistrationFunctionType;
   typedef typename DemonsRegistrationFunctionType::Pointer      DemonsRegistrationFunctionPointer;
-  typedef typename DemonsRegistrationFunctionType::GradientType GradientType;
+  typedef typename DemonsRegistrationFunctionType::GradientEnum GradientType;
 
   /** Get the metric value. The metric value is the mean square difference
    * in intensity between the fixed image and transforming moving image
