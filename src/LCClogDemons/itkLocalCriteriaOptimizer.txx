@@ -1,7 +1,6 @@
 #ifndef __itkLocalCriteriaOptimizer_txx
 #define __itkLocalCriteriaOptimizer_txx 
 
-
 #include "itkLocalCriteriaOptimizer.h"
 #include "itkVectorNeighborhoodOperatorImageFilter.h"
 #include "itkGaussianOperator.h"
@@ -15,156 +14,190 @@
 #include "itkDerivativeImageFilter.h"
 #include "itkAddImageFilter.h"
 #include "itkScalarImageToHistogramGenerator.h"
+#include <itkSubtractImageFilter.h>
 
 namespace itk
 {
 
-
-
 template<class TImageType1,class TImageType2>
 itk::SmartPointer<TImageType1> Operation(itk::SmartPointer<TImageType1> Image1, itk::SmartPointer<TImageType2> Image2, int  operation)
 {
-  typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
+    typename TImageType1::Pointer output;
 
-    
-  typename TImageType1::IndexType IndexV;
-
-  typename TImageType1::Pointer output = TImageType1::New();
-  output->SetRegions(Image1->GetBufferedRegion());
-  output->SetOrigin(Image1->GetOrigin());
-  output->SetSpacing(Image1->GetSpacing());
-  output->SetDirection(Image1->GetDirection());
-  output->Allocate();
-
-  IteratorType It = IteratorType( output, Image1->GetBufferedRegion());
-
-  for( It.GoToBegin(); !It.IsAtEnd(); ++It )
+    using PixelType1 = typename TImageType1::PixelType;
+    using PixelType2 = typename TImageType2::PixelType;
+    if constexpr (std::is_arithmetic<PixelType1>::value && std::is_arithmetic<PixelType2>::value)
     {
-      IndexV=It.GetIndex();	
-      if (operation==0)
-	It.Set(Image1->GetPixel(IndexV)+Image2->GetPixel(IndexV));
-      if (operation==1)
-        It.Set(Image1->GetPixel(IndexV)-Image2->GetPixel(IndexV));
-      if (operation==2)
-        It.Set(Image1->GetPixel(IndexV)*Image2->GetPixel(IndexV));
-   	
+        if (operation == 0)
+        {
+            using AddImageFilterType = itk::AddImageFilter<TImageType1, TImageType2>;
+            auto addFilter = AddImageFilterType::New();
+            addFilter->SetInput1(Image1);
+            addFilter->SetInput2(Image2);
+            addFilter->Update();
+            output = addFilter->GetOutput();
+        }
+        else if (operation == 1)
+        {
+            using SubtractImageFilterType = itk::SubtractImageFilter<TImageType1, TImageType2>;
+            auto subFilter = SubtractImageFilterType::New();
+            subFilter->SetInput1(Image1);
+            subFilter->SetInput2(Image2);
+            subFilter->Update();
+            output = subFilter->GetOutput();
+        }
+        else if (operation == 2)
+        {
+            using MultiplyImageFilterType = itk::MultiplyImageFilter<TImageType1, TImageType2>;
+            auto mulFilter = MultiplyImageFilterType::New();
+            mulFilter->SetInput1(Image1);
+            mulFilter->SetInput2(Image2);
+            mulFilter->Update();
+            output = mulFilter->GetOutput();
+        }
     }
+    else
+    {
+        using IteratorType = itk::ImageRegionIterator<TImageType1>;
 
-  return(output);
+        output = TImageType1::New();
+        output->SetRegions(Image1->GetLargestPossibleRegion());
+        output->SetOrigin(Image1->GetOrigin());
+        output->SetSpacing(Image1->GetSpacing());
+        output->SetDirection(Image1->GetDirection());
+        output->Allocate();
+
+        IteratorType it(Image1, Image1->GetLargestPossibleRegion());
+        for (it.GoToBegin(); !it.IsAtEnd(); ++it)
+        {
+            typename TImageType1::PixelType pixel = it.Get();
+            auto value = Image2->GetPixel(it.GetIndex());
+            typename TImageType1::PixelType newValue;
+            constexpr unsigned int PixelDimension = PixelType1::Dimension;
+            for (unsigned int i = 0; i < PixelDimension; ++i)
+            {
+                if (operation == 0)
+                {
+                    newValue[i] = pixel[i] + value;
+                }
+                else if (operation == 1)
+                {
+                    newValue[i] = pixel[i] - value;
+                }
+                else if (operation == 2)
+                {
+                    newValue[i] = pixel[i] * value;
+                }
+            }
+            it.Set(newValue);
+        }
+    }
+    return(output);
 }
 
 template<class TImageType1,class TImageType2>
-itk::SmartPointer<TImageType1> OperationV(itk::SmartPointer<TImageType1> Image1, itk::SmartPointer<TImageType2> Image2, int  operation,int dim)
+itk::SmartPointer<TImageType1> OperationV(itk::SmartPointer<TImageType1> Image1, itk::SmartPointer<TImageType2> Image2, int operation, int dim)
 {
-  typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
+    typename TImageType1::Pointer output;
+    typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
 
-    
-  typename TImageType1::IndexType IndexV;
+    output = TImageType1::New();
+    output->SetRegions(Image1->GetBufferedRegion());
+    output->SetOrigin(Image1->GetOrigin());
+    output->SetSpacing(Image1->GetSpacing());
+    output->SetDirection(Image1->GetDirection());
+    output->Allocate();
 
-  typename TImageType1::Pointer output = TImageType1::New();
-  output->SetRegions(Image1->GetBufferedRegion());
-  output->SetOrigin(Image1->GetOrigin());
-  output->SetSpacing(Image1->GetSpacing());
-  output->SetDirection(Image1->GetDirection());
-  output->Allocate();
+    IteratorType it = IteratorType( output, Image1->GetBufferedRegion());
 
-  IteratorType It = IteratorType( output, Image1->GetBufferedRegion());
-
-  typename TImageType1::PixelType vector;
-  for( It.GoToBegin(); !It.IsAtEnd(); ++It )
+    typename TImageType1::IndexType IndexV;
+    typename TImageType1::PixelType vector;
+    for( it.GoToBegin(); !it.IsAtEnd(); ++it )
     {
-      IndexV=It.GetIndex();	
-      if (operation==0)
+        IndexV=it.GetIndex();	
+        if (operation==0)
         {
-	for (int i=0;i<dim;++i)
-	  vector[i]=Image1->GetPixel(IndexV)[i]+Image2->GetPixel(IndexV)[i];
-        It.Set(vector);
+            for (int i=0;i<dim;++i)
+            {
+                vector[i]=Image1->GetPixel(IndexV)[i]+Image2->GetPixel(IndexV)[i];
+            }
+            it.Set(vector);
         }
-      if (operation==1)
+        else if (operation==1)
         {
-	for (int i=0;i<dim;++i)
-	  vector[i]=Image1->GetPixel(IndexV)[i]-Image2->GetPixel(IndexV)[i];
-        It.Set(vector);
-        }      
-       if (operation==2)
+            for (int i=0;i<dim;++i)
+            {
+                vector[i]=Image1->GetPixel(IndexV)[i]-Image2->GetPixel(IndexV)[i];
+            }
+            it.Set(vector);
+        }
+        else if (operation==2)
         {
-	for (int i=0;i<dim;++i)
-	  vector[i]=Image1->GetPixel(IndexV)[i]*Image2->GetPixel(IndexV)[i];
-        It.Set(vector);
-        }    
-      }
-
-  return(output);
+            for (int i=0;i<dim;++i)
+            {
+                vector[i]=Image1->GetPixel(IndexV)[i]*Image2->GetPixel(IndexV)[i];
+            }
+            it.Set(vector);
+        }
+    }
+  
+    return(output);
 }
 
 template<class TImageType1,class TImageType2>
 itk::SmartPointer<TImageType1> DivisionV(itk::SmartPointer<TImageType1> Image1, itk::SmartPointer<TImageType2> Image2, int dim)
 {
-  typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
+    typename TImageType1::Pointer output = TImageType1::New();
+    output->SetRegions(Image1->GetBufferedRegion());
+    output->SetOrigin(Image1->GetOrigin());
+    output->SetSpacing(Image1->GetSpacing());
+    output->SetDirection(Image1->GetDirection());
+    output->Allocate();
 
-    
-  typename TImageType1::IndexType IndexV;
+    typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
+    IteratorType It = IteratorType( output, Image1->GetBufferedRegion());
+    typename TImageType1::IndexType IndexV;
+    typename TImageType1::PixelType vector;
 
-  typename TImageType1::Pointer output = TImageType1::New();
-  output->SetRegions(Image1->GetBufferedRegion());
-  output->SetOrigin(Image1->GetOrigin());
-  output->SetSpacing(Image1->GetSpacing());
-  output->SetDirection(Image1->GetDirection());
-  output->Allocate();
-
-  IteratorType It = IteratorType( output, Image1->GetBufferedRegion());
-  
-  typename TImageType1::PixelType vector;
-  for( It.GoToBegin(); !It.IsAtEnd(); ++It )
+    for( It.GoToBegin(); !It.IsAtEnd(); ++It )
     {
-      IndexV=It.GetIndex();	
-      for (int i=0;i<dim;++i)
-        vector[i]=Image1->GetPixel(IndexV)[i]/Image2->GetPixel(IndexV);
+        IndexV=It.GetIndex();	
+        for (int i=0;i<dim;++i)
+        {
+          vector[i]=Image1->GetPixel(IndexV)[i]/Image2->GetPixel(IndexV);
+        }
         It.Set(vector);
-          
     }
 
   return(output);
 }
-
 
 template<class TImageType1,class TImageType2>
 itk::SmartPointer<TImageType1> Division(itk::SmartPointer<TImageType1> Image1, itk::SmartPointer<TImageType2> Image2)
 {
-  typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
+    typename TImageType1::Pointer output = TImageType1::New();
+    output->SetRegions(Image1->GetBufferedRegion());
+    output->SetOrigin(Image1->GetOrigin());
+    output->SetSpacing(Image1->GetSpacing());
+    output->SetDirection(Image1->GetDirection());
+    output->Allocate();
 
+    typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
+    typename TImageType1::IndexType IndexV;
+    IteratorType It = IteratorType( output, Image1->GetBufferedRegion());
     
-  typename TImageType1::IndexType IndexV;
-
-  typename TImageType1::Pointer output = TImageType1::New();
-  output->SetRegions(Image1->GetBufferedRegion());
-  output->SetOrigin(Image1->GetOrigin());
-  output->SetSpacing(Image1->GetSpacing());
-  output->SetDirection(Image1->GetDirection());
-  output->Allocate();
-
-  IteratorType It = IteratorType( output, Image1->GetBufferedRegion());
-  
-
-  for( It.GoToBegin(); !It.IsAtEnd(); ++It )
+    for( It.GoToBegin(); !It.IsAtEnd(); ++It )
     {
-      IndexV=It.GetIndex();	
-      It.Set(Image1->GetPixel(IndexV)/Image2->GetPixel(IndexV)  );
+        IndexV=It.GetIndex();	
+        It.Set(Image1->GetPixel(IndexV)/Image2->GetPixel(IndexV)  );
     }
 
-  return(output);
+    return(output);
 }
-
-
 
 template<class TImageType1>
 itk::SmartPointer<TImageType1> Sqrt(itk::SmartPointer<TImageType1> Image1)
 {
-  typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
-
-    
-  typename TImageType1::IndexType IndexV;
-
   typename TImageType1::Pointer output = TImageType1::New();
   output->SetRegions(Image1->GetBufferedRegion());
   output->SetOrigin(Image1->GetOrigin());
@@ -172,16 +205,22 @@ itk::SmartPointer<TImageType1> Sqrt(itk::SmartPointer<TImageType1> Image1)
   output->SetDirection(Image1->GetDirection());
   output->Allocate();
 
+  typedef typename itk::ImageRegionIterator <TImageType1> IteratorType;
+  typename TImageType1::IndexType IndexV;
   IteratorType It = IteratorType( output, Image1->GetBufferedRegion());
 
   for( It.GoToBegin(); !It.IsAtEnd(); ++It )
-    {
+  {
       IndexV=It.GetIndex();
-      if (Image1->GetPixel(IndexV)>0)	
+      if (Image1->GetPixel(IndexV)>0)
+      {
           It.Set(sqrt(Image1->GetPixel(IndexV)));
+      }
       else
+      {
           It.Set(0);
-    }
+      }
+  }
 
   return(output);
 }
@@ -340,7 +379,10 @@ template<class TFixedImage,class TMovingImage, class TDeformationField>
 LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
 ::LocalCriteriaOptimizer()
 {
-for (int i=0;i<FixedImageDimension;++i)   m_Sigma[i]=10;
+    for (int i=0;i<static_cast<int>(FixedImageDimension);++i)
+    {
+      m_Sigma[i]=10;
+    }
 
 typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
 m_MovingImageInterpolator = static_cast<InterpolatorType*>(interp.GetPointer() );
@@ -396,10 +438,11 @@ LocalCriteriaOptimizer<TFixedImage,TMovingImage,TDeformationField>
 IndexType indexV=it.GetIndex();
 
 
-for ( int i = 0; i < FixedImageDimension; ++i)
+for ( int i = 0; i < static_cast<int>(FixedImageDimension); ++i)
+{
     update[i]=1/(pow(m_SmoothedSimGrad->GetPixel(indexV).GetNorm(),2)+
     (m_SigmaI)/ (pow(m_SimilarityImage->GetPixel(indexV),2)) )*m_SmoothedSimGrad->GetPixel(indexV)[i];
-
+}
 
 if ( globalData )
  {
@@ -579,7 +622,7 @@ GradientF->Update();
       IndexV=ItF.GetIndex();	
       IndexV1=ItM.GetIndex();
        
-      for (int i=0;i<FixedImageDimension;++i)
+      for (int i=0; i<static_cast<int>(FixedImageDimension); ++i)
         {
          vector[i]=GradientF->GetOutput()->GetPixel(IndexV)[i];
          vector1[i]=GradientM->GetOutput()->GetPixel(IndexV1)[i];
