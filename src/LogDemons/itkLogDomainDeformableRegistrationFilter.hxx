@@ -3,7 +3,7 @@
 
 #include "itkLogDomainDeformableRegistrationFilter.h"
 
-#include "itkExceptionObject.h"
+#include "itkMacro.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageLinearIteratorWithIndex.h"
 #include "itkDataObject.h"
@@ -241,8 +241,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsWorldUnit( tmp );
 }
 
@@ -285,8 +287,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -359,8 +363,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviationsWorldUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsWorldUnit( tmp );
 }
 
@@ -403,8 +409,10 @@ LogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 ::SetUpdateFieldStandardDeviationsVoxelUnit( double value )
 {
     double tmp[ImageDimension];
-    for( int i=0; i<ImageDimension; i++ )
+    for( int i=0; i<static_cast<int>(ImageDimension); i++ )
+    {
         tmp[i] = value;
+    }
     SetUpdateFieldStandardDeviationsVoxelUnit( tmp );
 }
 
@@ -652,28 +660,7 @@ void
 LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 ::SmoothVelocityField()
 {
-    if (m_RegularizationType == 1)
-      {
-
-
-        float param[2];
-         param[0]=m_HarmonicWeight;
-         param[1]=m_BendingWeight;
-
-       /*  typedef typename itk::VectorRegularizationFilter<VelocityFieldType> RegularizerType;
-         //std::cout<<param[0]<<" "<<param[1]<<std::endl;
-
-         typename RegularizerType::Pointer Regularizer=RegularizerType::New();
-         Regularizer->SetInput(this->GetOutput());
-         Regularizer->SetFactor(param);
-
-         Regularizer->Update();
-
-         this->GraftOutput(Regularizer->GetOutput());
-      */
-        }
-
-    else if (m_RegularizationType == 0)
+  if (m_RegularizationType == 0)
       {
        if (this->GetSmoothVelocityField())
           {

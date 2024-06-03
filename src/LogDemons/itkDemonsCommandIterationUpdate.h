@@ -7,7 +7,7 @@
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkTransformFileReader.h>
 #include <itkTransformToVelocityFieldSource.h>
-#include <itkVectorCentralDifferenceImageFunction.h>
+#include <itkCentralDifferenceImageFunction.h>
 #include <itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunction.h>
 #include <itkWarpHarmonicEnergyCalculator.h>
 #include <itkWarpImageFilter.h>
@@ -55,8 +55,8 @@ public:
   typedef itk::WarpHarmonicEnergyCalculator<
      DeformationFieldType>                                HarmonicEnergyCalculatorType;
 
-  typedef itk::VectorCentralDifferenceImageFunction<
-     DeformationFieldType>                                WarpGradientCalculatorType;
+  typedef itk::CentralDifferenceImageFunction<
+     DeformationFieldType,float,itk::Matrix<double, DeformationFieldType::PixelType::Dimension, DeformationFieldType::ImageDimension> > WarpGradientCalculatorType;
 
   typedef typename WarpGradientCalculatorType::OutputType WarpGradientType;
    

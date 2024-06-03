@@ -365,7 +365,7 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
       /**
         * Iterative step Forward Euler: compute numiter times logJac(exp(vi))=logJac(exp(vi-1))|exp(v0)+logJac(exp(vi-1)) 
        **/
-      for( int i=0; i<numiter; i++ )
+      for( int i=0; i<static_cast<int>(numiter); i++ )
         {
          WarpImg->SetInput(Image);
          VectorWarper->SetInput(Vect1);
@@ -415,7 +415,7 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
   /**
     *     Iterative step Scaling and Squaring: compute numiter times logJac(exp(vi))=log[det(Jac(exp(vi-1)))|exp(vi-1)]+log[det(Jac(exp(vi-1)))] 
    **/
-      for( int i=0; i<numiter; i++ )
+      for( int i=0; i<static_cast<int>(numiter); i++ )
 	{
          WarpImg->SetInput(ExpImage->GetOutput());
          WarpImg->SetDisplacementField(Vect1);
