@@ -1,0 +1,12 @@
+LCC-LogDemons 1.3:
+- Compatibility with CMake 4.3.4.
+- Addition of this release notes file.
+
+LCC-LogDemons 1.2:
+- Compatibility with ITK5.3rc04.
+
+LCC-LogDemons 1.1:
+- Compatibility with ITK5.1.1.
+
+LCC-LogDemons 1.0:
+- Implementation of the LCC-LogDemons registration algorithm.
