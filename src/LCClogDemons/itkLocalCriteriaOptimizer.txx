@@ -89,7 +89,7 @@ itk::SmartPointer<TImageType1> Operation(itk::SmartPointer<TImageType1> Image1, 
                     newValue[i] = pixel[i] * value;
                 }
             }
-            it.Set(newValue);
+            output->SetPixel(it.GetIndex(), newValue);
         }
     }
     return(output);
