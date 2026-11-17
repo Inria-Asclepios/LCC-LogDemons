@@ -7,7 +7,7 @@
 #include "itkMultiplyImageFilter.h"
 #include <vnl/vnl_math.h>
 #include <itkImageRegionIterator.h>
-#include <itkDivideByConstantImageFilter.h>
+#include <itkDivideImageFilter.h>
 #include <itkWarpVectorImageFilter.h>
 #include <itkWarpImageFilter.h>
 #include <itkWarpVectorImageFilter.h>
@@ -250,9 +250,9 @@ int main( int argc, char ** argv )
   /**
     *     Scale the input SVF 
    **/
-  typedef itk::DivideByConstantImageFilter<VectorImageType,float,VectorImageType> DividerType;
+  typedef itk::DivideImageFilter<VectorImageType,ImageType,VectorImageType> DividerType;
   DividerType::Pointer Divider=DividerType::New();
-  Divider->SetInput(Out1);
+  Divider->SetInput1(Out1);
   Divider->SetConstant(divider );
   Divider->Update();
 
