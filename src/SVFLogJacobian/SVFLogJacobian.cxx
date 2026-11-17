@@ -446,7 +446,7 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
          Vect1->DisconnectPipeline();
          Image=Add->GetOutput();
          Image->DisconnectPipeline();
-         ExpImage->SetInput(Add->GetOutput());
+         ExpImage->SetInput(Image);
          ExpImage->Update();
         }
       }
@@ -454,7 +454,12 @@ typedef itk::WarpVectorImageFilter<VectorImageType,VectorImageType,VectorImageTy
   typedef itk::ImageFileWriter<ImageType> ImageWriterType;
   ImageWriterType::Pointer WriterImg=ImageWriterType::New();
 
-  WriterImg->SetInput(Add->GetOutput());
+  // Forward Euler retains its result in Add; scaling and squaring retains
+  // the detached final Image (also valid when no squaring is required).
+  if (param.NumericalScheme==1)
+    WriterImg->SetInput(Add->GetOutput());
+  else
+    WriterImg->SetInput(Image);
   WriterImg->SetFileName(param.OutputImage);
   WriterImg->Update();
 
