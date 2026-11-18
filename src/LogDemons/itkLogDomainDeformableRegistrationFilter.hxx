@@ -35,6 +35,8 @@ LogDomainDeformableRegistrationFilter<TFixedImage, TMovingImage, TField>
 
   this->SetNumberOfIterations(10);
 
+  m_RegularizationType = 0;
+
   unsigned int j;
   for( j = 0; j < ImageDimension; j++ )
     {
