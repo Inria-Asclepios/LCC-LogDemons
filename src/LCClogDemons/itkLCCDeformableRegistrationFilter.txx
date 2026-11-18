@@ -35,6 +35,7 @@ LCCDeformableRegistrationFilter<TFixedImage,TMovingImage,TField>
 
     this->SetNumberOfIterations(10);
 
+    m_UseMask = false;
     m_RegularizationType = 1;
 
     m_HarmonicWeight   = 1e-4;
